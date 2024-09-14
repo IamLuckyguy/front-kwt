@@ -137,15 +137,18 @@ pipeline {
     post {
         always {
             script {
-                // 작업 디렉토리 정리
-                deleteDir()
+                if (env.WORKSPACE) {
+                    echo "Cleaning workspace..."
+                    deleteDir()
+                } else {
+                    echo "Skipping workspace cleanup as WORKSPACE is not defined"
+                }
             }
         }
         success {
             echo 'The Pipeline succeeded :)'
         }
         failure {
-            // 실패시 알람 검토
             echo 'The Pipeline failed :('
         }
     }
