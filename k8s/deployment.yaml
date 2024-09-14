@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-kwt-deployment
+  namespace: front-kwt
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: front-kwt
+  template:
+    metadata:
+      labels:
+        app: front-kwt
+    spec:
+      containers:
+        - name: front-kwt
+          image: wondookong/front-kwt:latest
+          ports:
+            - containerPort: 3000
