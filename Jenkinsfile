@@ -136,14 +136,7 @@ pipeline {
     }
     post {
         always {
-            script {
-                if (env.WORKSPACE) {
-                    echo "Cleaning workspace..."
-                    deleteDir()
-                } else {
-                    echo "Skipping workspace cleanup as WORKSPACE is not defined"
-                }
-            }
+            echo "Pipeline execution completed"
         }
         success {
             echo 'The Pipeline succeeded :)'
