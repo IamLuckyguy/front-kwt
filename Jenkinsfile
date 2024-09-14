@@ -136,10 +136,16 @@ pipeline {
     }
     post {
         always {
-            cleanWs()
+            script {
+                // 작업 디렉토리 정리
+                deleteDir()
+            }
+        }
+        success {
+            echo 'The Pipeline succeeded :)'
         }
         failure {
-            // 실패 시 알림 로직 추가
+            // 실패시 알람 검토
             echo 'The Pipeline failed :('
         }
     }
