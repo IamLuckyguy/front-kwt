@@ -51,12 +51,6 @@ pipeline {
         DEPLOYMENT_NAME = "front-kwt-deployment"
     }
     stages {
-        stage('Verify Workspace') {
-            steps {
-                sh 'ls -al /workspace'
-                sh 'cat /workspace/Dockerfile'
-            }
-        }
         stage('Get Previous Version') {
             steps {
                 script {
@@ -78,6 +72,12 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+        stage('Verify Workspace') {
+            steps {
+                sh 'ls -al /workspace'
+                sh 'cat /workspace/Dockerfile'
             }
         }
         stage('Build and Push with Kaniko') {
