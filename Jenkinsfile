@@ -8,6 +8,15 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:3261.v9c670a_4748a_9-1
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "500m"
+        limits:
+          memory: "1024Mi"
+          cpu: "1000m"
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
       imagePullPolicy: Always
