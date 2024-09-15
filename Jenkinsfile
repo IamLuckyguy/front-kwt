@@ -36,13 +36,7 @@ spec:
     - name: kubectl
       image: bitnami/kubectl:1.30.4
       command:
-        - /bin/sh
-        - -c
-        - |
-          apk add --no-cache curl && \\
-          curl -L https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -o /usr/local/bin/yq && \\
-          chmod +x /usr/local/bin/yq && \\
-          exec cat
+        - cat
       tty: true
   volumes:
   - name: jenkins-docker-cfg
@@ -151,42 +145,17 @@ spec:
                 }
             }
         }
-        stage('Install yq') {
-            steps {
-                container('kubectl') {
-                    sh """
-                        wget https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-                    """
-                }
-            }
-        }
         stage('Update Kubernetes manifests') {
             steps {
                 container('kubectl') {
                     script {
                         sh """
-                            yq e '.spec.template.spec.containers[0].image = "${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"' -i k8s/deployment.yaml
-                        """
+                    sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}|' k8s/deployment.yaml
+                """
                     }
                 }
             }
         }
-//        stage('Create Namespace') {
-//            steps {
-//                container('kubectl') {
-//                    withKubeConfig([credentialsId: 'kubernetes-config']) {
-//                        script {
-//                            try {
-//                                sh "kubectl create namespace ${env.K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
-//                            } catch (Exception e) {
-//                                echo "Error details: ${e.getMessage()}"
-//                                error "Stage failed: ${STAGE_NAME}"
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
