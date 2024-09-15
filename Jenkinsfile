@@ -10,9 +10,6 @@ pipeline {
                   containers:
                   - name: kaniko
                     image: gcr.io/kaniko-project/executor:v1.23.2
-                    command:
-                    - cat
-                    tty: true
                     volumeMounts:
                     - name: jenkins-docker-cfg
                       mountPath: /kaniko/.docker
