@@ -55,18 +55,19 @@ spec:
     stages {
         stage('Get Previous Version') {
             steps {
-                script {
-                    try {
-                        previousVersion = sh(
-                            script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} -o=jsonpath='{.spec.template.spec.containers[0].image}'",
-                            returnStdout: true
-                        ).trim()
-                        echo "Previous version: ${previousVersion}"
-                    } catch (Exception e) {
-                        echo "Error details: ${e.getMessage()}"
-                        error "Stage failed: ${STAGE_NAME}"
-                        echo "Failed to get previous version. This might be the first deployment."
-                        previousVersion = null
+                container('kubectl') {
+                    script {
+                        try {
+                            previousVersion = sh(
+                                    script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} -o=jsonpath='{.spec.template.spec.containers[0].image}'",
+                                    returnStdout: true
+                            ).trim()
+                            echo "Previous version: ${previousVersion}"
+                        } catch (Exception e) {
+                            echo "Error details: ${e.getMessage()}"
+                            echo "Failed to get previous version. This might be the first deployment."
+                            previousVersion = null
+                        }
                     }
                 }
             }
