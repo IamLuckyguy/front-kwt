@@ -11,6 +11,8 @@ spec:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
       imagePullPolicy: Always
+      command:
+        - /busybox/cat
       tty: true
       resources:
         requests:
