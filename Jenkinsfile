@@ -28,7 +28,7 @@ pipeline {
                     projected:
                       sources:
                       - secret:
-                          name: docker-hub-credentials
+                          name: docker-credentials
                           items:
                             - key: .dockerconfigjson
                               path: config.json
