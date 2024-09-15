@@ -72,6 +72,20 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                echo "Branch: ${env.GIT_BRANCH}"
+                echo "Commit: ${env.GIT_COMMIT}"
+                script {
+                    if (fileExists('Dockerfile')) {
+                        echo "Dockerfile exists"
+                    } else {
+                        error "Dockerfile not found"
+                    }
+                }
+            }
+        }
+        stage('Copy Dockerfile') {
+            steps {
+                sh 'cp Dockerfile /workspace/Dockerfile'
             }
         }
         stage('Debug') {
@@ -176,8 +190,13 @@ pipeline {
         success {
             echo 'The Pipeline succeeded :)'
         }
+        aborted {
+            def logContent = sh(script: 'cat kaniko.log', returnStdout: true).trim()
+            echo "aborted Kaniko log content:\n${logContent}"
+        }
         failure {
-            echo 'The Pipeline failed :('
+            def logContent = sh(script: 'cat kaniko.log', returnStdout: true).trim()
+            echo "failure Kaniko log content:\n${logContent}"
         }
     }
 }
