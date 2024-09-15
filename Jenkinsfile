@@ -37,6 +37,7 @@ pipeline {
                             - key: .dockerconfigjson
                               path: config.json
             '''
+            podRetention(always())
         }
     }
     parameters {
