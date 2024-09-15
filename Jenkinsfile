@@ -99,14 +99,16 @@ pipeline {
         }
         stage('Build and Push with Kaniko') {
             steps {
+                echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
+                echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
                     script {
                         try {
                             sh """
                                 /kaniko/executor --context /workspace \
                                                  --dockerfile /workspace/Dockerfile \
-                                                 --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \
-                                                 --destination ${env.DOCKER_IMAGE}:latest 2>&1 | tee kaniko.log
+                                                 --destination "${env.DOCKER_IMAGE}:${env.DOCKER_TAG}" \
+                                                 --destination "${env.DOCKER_IMAGE}:latest" 2>&1 | tee kaniko.log
                             """
                         } catch (Exception e) {
                             echo "Error details: ${e.getMessage()}"
