@@ -16,6 +16,8 @@ pipeline {
                     volumeMounts:
                     - name: jenkins-docker-cfg
                       mountPath: /kaniko/.docker
+                    - name: workspace-volume
+                      mountPath: /workspace
                   - name: kubectl
                     image: bitnami/kubectl:1.30.4
                     command:
@@ -26,7 +28,7 @@ pipeline {
                     projected:
                       sources:
                       - secret:
-                          name: docker-credentials
+                          name: docker-hub-credentials
                           items:
                             - key: .dockerconfigjson
                               path: config.json
@@ -37,6 +39,7 @@ pipeline {
         string(name: 'IMAGE_TAG', defaultValue: '', description: '배포할 이미지 태그 (비워두면 최신 빌드 번호 사용)')
     }
     environment {
+        DOCKER_CONFIG = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "wondookong/front-kwt"
         DOCKER_TAG = "${params.IMAGE_TAG ?: env.BUILD_NUMBER}"
         K8S_NAMESPACE = "front-kwt"
@@ -53,6 +56,8 @@ pipeline {
                         ).trim()
                         echo "Previous version: ${previousVersion}"
                     } catch (Exception e) {
+                        echo "Error details: ${e.getMessage()}"
+                        error "Stage failed: ${STAGE_NAME}"
                         echo "Failed to get previous version. This might be the first deployment."
                         previousVersion = null
                     }
@@ -70,25 +75,35 @@ pipeline {
                     script {
                         try {
                             sh """
-                                /kaniko/executor --context `pwd` \
-                                                 --dockerfile `pwd`/Dockerfile \
+                                /kaniko/executor --context /workspace \
+                                                 --dockerfile /workspace/Dockerfile \
                                                  --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \
                                                  --destination ${env.DOCKER_IMAGE}:latest
                             """
-                        } catch (exc) {
-                            error "Failed to build and push Docker image: ${exc.message}"
+                        } catch (Exception e) {
+                            echo "Error details: ${e.getMessage()}"
+                            error "Stage failed: ${STAGE_NAME}"
                         }
                     }
                 }
             }
         }
+        stage('Install yq') {
+            steps {
+                container('kubectl') {
+                    sh """
+                        wget https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+                    """
+                }
+            }
+        }
         stage('Update Kubernetes manifests') {
             steps {
-                script {
-                    try {
-                        sh "sed -i 's|${env.DOCKER_IMAGE}:.*|${env.DOCKER_IMAGE}:${env.DOCKER_TAG}|' k8s/deployment.yaml"
-                    } catch (exc) {
-                        error "Failed to update Kubernetes manifests: ${exc.message}"
+                container('kubectl') {
+                    script {
+                        sh """
+                            yq e '.spec.template.spec.containers[0].image = "${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"' -i k8s/deployment.yaml
+                        """
                     }
                 }
             }
@@ -100,8 +115,9 @@ pipeline {
                         script {
                             try {
                                 sh "kubectl create namespace ${env.K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
-                            } catch (exc) {
-                                error "Failed to create namespace: ${exc.message}"
+                            } catch (Exception e) {
+                                echo "Error details: ${e.getMessage()}"
+                                error "Stage failed: ${STAGE_NAME}"
                             }
                         }
                     }
@@ -119,6 +135,7 @@ pipeline {
                                 sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
                             } catch (Exception e) {
                                 echo "Deployment failed: ${e.message}"
+                                error "Stage failed: ${STAGE_NAME}"
                                 if (previousVersion) {
                                     echo "Rolling back to ${previousVersion}"
                                     sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
