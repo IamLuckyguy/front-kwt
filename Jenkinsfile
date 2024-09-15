@@ -36,7 +36,13 @@ spec:
     - name: kubectl
       image: bitnami/kubectl:1.30.4
       command:
-        - cat
+        - /bin/sh
+        - -c
+        - |
+          apk add --no-cache curl && \\
+          curl -L https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64 -o /usr/local/bin/yq && \\
+          chmod +x /usr/local/bin/yq && \\
+          exec cat
       tty: true
   volumes:
   - name: jenkins-docker-cfg
@@ -62,6 +68,52 @@ spec:
         DEPLOYMENT_NAME = "front-kwt-deployment"
     }
     stages {
+        stage('Create Namespace and Deployment if not exists') {
+            steps {
+                container('kubectl') {
+                    script {
+                        // Check and create namespace if not exists
+                        try {
+                            sh "kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}"
+                            echo "Namespace ${env.K8S_NAMESPACE} exists or has been created."
+                        } catch (Exception e) {
+                            echo "Error creating namespace: ${e.getMessage()}"
+                        }
+
+                        // Check and create deployment if not exists
+                        try {
+                            sh """
+                    kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} || kubectl apply -f - <<EOF
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                      name: ${env.DEPLOYMENT_NAME}
+                      namespace: ${env.K8S_NAMESPACE}
+                    spec:
+                      replicas: 1
+                      selector:
+                        matchLabels:
+                          app: front-kwt
+                      template:
+                        metadata:
+                          labels:
+                            app: front-kwt
+                        spec:
+                          containers:
+                          - name: front-kwt
+                            image: wondookong/front-kwt:latest
+                            ports:
+                            - containerPort: 80
+                    EOF
+                    """
+                            echo "Deployment ${env.DEPLOYMENT_NAME} exists or has been created."
+                        } catch (Exception e) {
+                            echo "Error creating deployment: ${e.getMessage()}"
+                        }
+                    }
+                }
+            }
+        }
         stage('Get Previous Version') {
             steps {
                 container('kubectl') {
@@ -119,22 +171,22 @@ spec:
                 }
             }
         }
-        stage('Create Namespace') {
-            steps {
-                container('kubectl') {
-                    withKubeConfig([credentialsId: 'kubernetes-config']) {
-                        script {
-                            try {
-                                sh "kubectl create namespace ${env.K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
-                            } catch (Exception e) {
-                                echo "Error details: ${e.getMessage()}"
-                                error "Stage failed: ${STAGE_NAME}"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        stage('Create Namespace') {
+//            steps {
+//                container('kubectl') {
+//                    withKubeConfig([credentialsId: 'kubernetes-config']) {
+//                        script {
+//                            try {
+//                                sh "kubectl create namespace ${env.K8S_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -"
+//                            } catch (Exception e) {
+//                                echo "Error details: ${e.getMessage()}"
+//                                error "Stage failed: ${STAGE_NAME}"
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
