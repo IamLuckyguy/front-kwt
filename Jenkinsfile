@@ -74,6 +74,13 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Debug') {
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+                sh 'cat Dockerfile'
+            }
+        }
         stage('Verify Workspace') {
             steps {
                 sh 'ls -al /workspace'
