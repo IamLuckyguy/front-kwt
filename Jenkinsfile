@@ -10,13 +10,8 @@ pipeline {
                   containers:
                   - name: kaniko
                     image: gcr.io/kaniko-project/executor:v1.23.2
-                    command:
-                    - /kaniko/executor
-                    args:
-                    - --dockerfile=/workspace/Dockerfile
-                    - --context=/workspace
-                    - --destination=${DOCKER_IMAGE}:${DOCKER_TAG}
-                    - --destination=${DOCKER_IMAGE}:latest
+                    command: ["sleep"]
+                    args: ["infinity"]
                     volumeMounts:
                     - name: jenkins-docker-cfg
                       mountPath: /kaniko/.docker
