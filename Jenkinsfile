@@ -11,8 +11,12 @@ pipeline {
                   - name: kaniko
                     image: gcr.io/kaniko-project/executor:v1.23.2
                     command:
-                    - /busybox/cat
-                    tty: true
+                    - /kaniko/executor
+                    args:
+                    - --dockerfile=/workspace/Dockerfile
+                    - --context=/workspace
+                    - --destination=${DOCKER_IMAGE}:${DOCKER_TAG}
+                    - --destination=${DOCKER_IMAGE}:latest
                     volumeMounts:
                     - name: jenkins-docker-cfg
                       mountPath: /kaniko/.docker
@@ -46,6 +50,12 @@ pipeline {
         DEPLOYMENT_NAME = "front-kwt-deployment"
     }
     stages {
+        stage('Verify Workspace') {
+            steps {
+                sh 'ls -al /workspace'
+                sh 'cat /workspace/Dockerfile'
+            }
+        }
         stage('Get Previous Version') {
             steps {
                 script {
@@ -78,7 +88,7 @@ pipeline {
                                 /kaniko/executor --context /workspace \
                                                  --dockerfile /workspace/Dockerfile \
                                                  --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \
-                                                 --destination ${env.DOCKER_IMAGE}:latest
+                                                 --destination ${env.DOCKER_IMAGE}:latest 2>&1 | tee kaniko.log
                             """
                         } catch (Exception e) {
                             echo "Error details: ${e.getMessage()}"
