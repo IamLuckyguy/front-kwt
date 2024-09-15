@@ -2,6 +2,15 @@ def previousVersion
 
 pipeline {
     agent {
+        stages {
+            stage('Print Environment') {
+                steps {
+                    echo "Print Environment Start!!!"
+                    echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
+                    echo "DOCKER_TAG: ${env.DOCKER_TAG}"
+                }
+            }
+        }
         kubernetes {
             yaml '''
                 apiVersion: v1
