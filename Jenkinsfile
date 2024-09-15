@@ -12,7 +12,7 @@ spec:
       image: gcr.io/kaniko-project/executor:v1.23.2
       imagePullPolicy: Always
       command:
-        - /busybox/cat
+        - cat
       tty: true
       resources:
         requests:
