@@ -66,6 +66,8 @@ spec:
             steps {
                 container('kubectl') {
                     script {
+                        echo "K8S_NAMESPACE: ${env.K8S_NAMESPACE}"
+                        echo "DEPLOYMENT_NAME: ${env.DEPLOYMENT_NAME}"
                         try {
                             previousVersion = sh(
                                     script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} -o=jsonpath='{.spec.template.spec.containers[0].image}'",
