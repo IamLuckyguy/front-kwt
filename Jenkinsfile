@@ -191,12 +191,10 @@ pipeline {
             echo 'The Pipeline succeeded :)'
         }
         aborted {
-            def logContent = sh(script: 'cat kaniko.log', returnStdout: true).trim()
-            echo "aborted Kaniko log content:\n${logContent}"
+            echo "aborted Pipeline"
         }
         failure {
-            def logContent = sh(script: 'cat kaniko.log', returnStdout: true).trim()
-            echo "failure Kaniko log content:\n${logContent}"
+            echo "failure Pipeline :("
         }
     }
 }
