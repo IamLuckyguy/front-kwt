@@ -64,9 +64,12 @@ pipeline {
         }
         stage('Checkout') {
             steps {
+                echo "Starting checkout..."
                 checkout scm
+                echo "Checkout completed"
                 echo "Branch: ${env.GIT_BRANCH}"
                 echo "Commit: ${env.GIT_COMMIT}"
+                echo "Current directory contents:"
                 script {
                     if (fileExists('Dockerfile')) {
                         echo "Dockerfile exists"
