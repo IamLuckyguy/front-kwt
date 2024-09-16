@@ -39,6 +39,9 @@ spec:
       command:
         - cat
       tty: true
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
   volumes:
   - name: jenkins-docker-cfg
     projected:
@@ -115,7 +118,7 @@ EOF
                         } catch (Exception e) {
                             echo "Error details: ${e.getMessage()}"
                             echo "Failed to get previous version. This might be the first deployment."
-                            previousVersion = null
+                            previousVersion = "${env.DOCKER_IMAGE}:latest"
                         }
                     }
                 }
@@ -159,7 +162,6 @@ EOF
                                 sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
                             } catch (Exception e) {
                                 echo "Deployment failed: ${e.message}"
-                                error "Stage failed: ${STAGE_NAME}"
                                 if (previousVersion) {
                                     echo "Rolling back to ${previousVersion}"
                                     sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
