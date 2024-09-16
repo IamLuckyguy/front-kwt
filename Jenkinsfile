@@ -70,12 +70,9 @@ spec:
                         // Check and create namespace if not exists
                         sh "kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}"
 
-                        // Check if deployment exists
-                        def deploymentExists = sh(script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}", returnStatus: true) == 0
-
-                        if (!deploymentExists) {
-                            echo "Deployment does not exist. Creating..."
-                            sh """
+                        // Check if deployment exists and create if not exists
+                        sh """
+kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} || \
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -98,10 +95,7 @@ spec:
         ports:
         - containerPort: 80
 EOF
-                    """
-                        } else {
-                            echo "Deployment ${env.DEPLOYMENT_NAME} already exists."
-                        }
+"""
                     }
                 }
             }
