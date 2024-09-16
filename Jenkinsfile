@@ -66,15 +66,37 @@ spec:
         DEPLOYMENT_NAME = "front-kwt-deployment"
     }
     stages {
-        stage('Create Namespace and Deployment if not exists') {
+        stage('Create Namespace if not exists') {
             steps {
                 container('kubectl') {
                     script {
-                        // Check and create namespace if not exists
-                        sh "kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}"
+                        def namespaceExists = sh(
+                                script: "kubectl get namespace ${env.K8S_NAMESPACE}",
+                                returnStatus: true
+                        ) == 0
 
-                        // Check if deployment exists and create if not exists
-                        sh """
+                        if (!namespaceExists) {
+                            echo "Namespace does not exist. Creating new Namespace..."
+                            sh "kubectl create namespace ${env.K8S_NAMESPACE}"
+                        } else {
+                            echo "Namespace already exists. Skipping creation."
+                        }
+                    }
+                }
+            }
+        }
+        stage('Create Deployment if not exists') {
+            steps {
+                container('kubectl') {
+                    script {
+                        def deploymentExists = sh(
+                                script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}",
+                                returnStatus: true
+                        ) == 0
+
+                        if (!deploymentExists) {
+                            echo "Deployment does not exist. Creating new Deployment..."
+                            sh """
 kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} || \
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
@@ -99,6 +121,44 @@ spec:
         - containerPort: 80
 EOF
 """
+                        } else {
+                            echo "Deployment already exists. Skipping creation."
+                        }
+                    }
+                }
+            }
+        }
+        stage('Create Service if not exists') {
+            steps {
+                container('kubectl') {
+                    script {
+                        def serviceExists = sh(
+                                script: "kubectl get service ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}",
+                                returnStatus: true
+                        ) == 0
+
+                        if (!serviceExists) {
+                            echo "Service does not exist. Creating new Service..."
+                            sh """
+                    kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${env.DEPLOYMENT_NAME}
+  namespace: ${env.K8S_NAMESPACE}
+spec:
+  selector:
+    app: front-kwt
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+EOF
+                    """
+                        } else {
+                            echo "Service already exists. Skipping creation."
+                        }
                     }
                 }
             }
@@ -131,17 +191,16 @@ EOF
                 container('kaniko') {
                     script {
                         def kanikoCommand = """
-                          /kaniko/executor 
-                          --context `pwd` 
-                          --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} 
-                          --destination ${env.DOCKER_IMAGE}:latest 
-                          --insecure 
-                          --skip-tls-verify  
-                          --cleanup 
-                          --dockerfile Dockerfile 
-                          --verbosity debug
+                            /kaniko/executor \\
+                            --context `pwd` \\
+                            --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
+                            --destination ${env.DOCKER_IMAGE}:latest \\
+                            --insecure \\
+                            --skip-tls-verify \\
+                            --cleanup \\
+                            --dockerfile Dockerfile \\
+                            --verbosity debug
                         """
-                        echo "Executing Kaniko command: ${kanikoCommand}"
                         sh kanikoCommand
                     }
                 }
