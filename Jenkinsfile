@@ -129,14 +129,21 @@ EOF
                 echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
                 echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
-                    sh '/kaniko/executor --context `pwd` \
-                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \
-                             --destination ${env.DOCKER_IMAGE}:latest \
-                             --insecure \
-                             --skip-tls-verify  \
-                             --cleanup \
-                             --dockerfile Dockerfile \
-                             --verbosity debug'
+                    script {
+                        def kanikoCommand = """
+                          /kaniko/executor 
+                          --context `pwd` 
+                          --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} 
+                          --destination ${env.DOCKER_IMAGE}:latest 
+                          --insecure 
+                          --skip-tls-verify  
+                          --cleanup 
+                          --dockerfile Dockerfile 
+                          --verbosity debug
+                        """
+                        echo "Executing Kaniko command: ${kanikoCommand}"
+                        sh kanikoCommand
+                    }
                 }
             }
         }
