@@ -189,8 +189,8 @@ EOF
                 echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
                 echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
-                    script {
-                        def kanikoCommand = """
+                    withCredentials([file(credentialsId: 'docker-hub-credentials', variable: 'DOCKER_CONFIG')]) {
+                        sh """
                             /kaniko/executor \\
                             --context `pwd` \\
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
@@ -201,7 +201,6 @@ EOF
                             --dockerfile Dockerfile \\
                             --verbosity debug
                         """
-                        sh kanikoCommand
                     }
                 }
             }
