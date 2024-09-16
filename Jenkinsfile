@@ -35,7 +35,7 @@ spec:
         - name: jenkins-docker-cfg
           mountPath: /kaniko/.docker
     - name: kubectl
-      image: bitnami/kubectl:1.30.4-debian-11-r0
+      image: bitnami/kubectl:1.30.4
       command:
         - cat
       tty: true
