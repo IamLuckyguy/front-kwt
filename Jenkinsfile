@@ -188,7 +188,8 @@ EOF
                 echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
                 echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
-                    script {
+                    withEnv(['DOCKER_CONFIG=/kaniko/.docker'])
+                    {
                         sh """
                             /kaniko/executor \\
                             --context `pwd` \\
