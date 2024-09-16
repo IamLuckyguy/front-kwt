@@ -198,6 +198,7 @@ EOF
                             --context `pwd` \\
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
+                            --docker-config=/kaniko/.docker \\
                             --insecure \\
                             --skip-tls-verify \\
                             --cleanup \\
