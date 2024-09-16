@@ -216,7 +216,7 @@ EOF
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
-                    withKubeConfig([credentialsId: 'kubernetes-service-account']) {
+                    withCredentials([string(credentialsId: 'kubernetes-service-account', variable: 'KUBE_TOKEN')]) {
                         script {
                             try {
                                 sh "kubectl apply -f k8s/deployment.yaml -n ${env.K8S_NAMESPACE}"
