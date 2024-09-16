@@ -196,8 +196,7 @@ EOF
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
-                            --verbosity debug \\
-                            --docker-config=/kaniko/.docker
+                            --verbosity debug
                         """
                     }
                 }
