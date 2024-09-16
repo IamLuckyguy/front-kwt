@@ -188,16 +188,17 @@ EOF
                 echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
                 echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
-                    script {
-                        sh """
-                            /kaniko/executor \\
-                            --context `pwd` \\
-                            --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
-                            --destination ${env.DOCKER_IMAGE}:latest \\
-                            --cleanup \\
-                            --dockerfile Dockerfile \\
-                            --verbosity debug
-                        """
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh '''
+      echo '{"auths": {"https://index.docker.io/v2/": {"auth": "'$(echo -n ${DOCKER_USERNAME}:${DOCKER_PASSWORD} | base64)'"}}' > /kaniko/.docker/config.json
+      cat /kaniko/.docker/config.json
+      /kaniko/executor \
+        --context `pwd` \
+        --destination ${DOCKER_IMAGE}:${DOCKER_TAG} \
+        --destination ${DOCKER_IMAGE}:latest \
+        --dockerfile Dockerfile \
+        --verbosity debug
+    '''
                     }
                 }
             }
