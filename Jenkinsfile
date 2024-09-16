@@ -134,7 +134,7 @@ EOF
                 container('kubectl') {
                     script {
                         def serviceExists = sh(
-                                script: "kubectl get service ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}",
+                                script: "kubectl get service ${env.SERVICE_NAME} -n ${env.K8S_NAMESPACE}",
                                 returnStatus: true
                         ) == 0
 
