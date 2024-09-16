@@ -32,7 +32,7 @@ spec:
           memory: "2048Mi"
           cpu: "1500m"
       volumeMounts:
-        - name: jenkins-docker-cfg
+        - name: docker-config
           mountPath: /kaniko/.docker
     - name: kubectl
       image: bitnami/kubectl:1.30.4
@@ -43,14 +43,12 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
   volumes:
-  - name: jenkins-docker-cfg
-    projected:
-      sources:
-        - secret:
-          name: docker-credentials
-          items:
-            - key: .dockerconfigjson
-              path: config.json
+    - name: docker-config
+      secret:
+        secretName: docker-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json
 '''
             podRetention(always())
         }
