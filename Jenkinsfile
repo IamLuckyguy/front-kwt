@@ -196,7 +196,7 @@ EOF
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
                             --verbosity debug \\
-                            --dockerconfig=/kaniko/.docker
+                            --docker-config=/kaniko/.docker
                         """
                     }
                 }
