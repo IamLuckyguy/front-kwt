@@ -64,6 +64,7 @@ spec:
         DOCKER_TAG = "${params.IMAGE_TAG ?: env.BUILD_NUMBER}"
         K8S_NAMESPACE = "front-kwt"
         DEPLOYMENT_NAME = "front-kwt-deployment"
+        SERVICE_NAME = "front-kwt-service"
     }
     stages {
         stage('Create Namespace if not exists') {
@@ -144,7 +145,7 @@ EOF
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${env.DEPLOYMENT_NAME}
+  name: ${env.SERVICE_NAME}
   namespace: ${env.K8S_NAMESPACE}
 spec:
   selector:
@@ -189,7 +190,11 @@ EOF
                 echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
                 echo "DOCKER_TAG: ${env.DOCKER_TAG}"
                 container('kaniko') {
-                    withCredentials([file(credentialsId: 'docker-hub-credentials', variable: 'DOCKER_CONFIG')]) {
+                    withCredentials([usernamePassword(
+                                    credentialsId: 'docker-hub-credentials',
+                                    usernameVariable: 'DOCKER_USERNAME',
+                                    passwordVariable: 'DOCKER_PASSWORD'
+                    )]) {
                         sh """
                             /kaniko/executor \\
                             --context `pwd` \\
