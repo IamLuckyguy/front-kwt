@@ -68,42 +68,39 @@ spec:
                 container('kubectl') {
                     script {
                         // Check and create namespace if not exists
-                        try {
-                            sh "kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}"
-                            echo "Namespace ${env.K8S_NAMESPACE} exists or has been created."
-                        } catch (Exception e) {
-                            echo "Error creating namespace: ${e.getMessage()}"
-                        }
+                        sh "kubectl get namespace ${env.K8S_NAMESPACE} || kubectl create namespace ${env.K8S_NAMESPACE}"
 
-                        // Check and create deployment if not exists
-                        try {
+                        // Check if deployment exists
+                        def deploymentExists = sh(script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}", returnStatus: true) == 0
+
+                        if (!deploymentExists) {
+                            echo "Deployment does not exist. Creating..."
                             sh """
-                    kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} || kubectl apply -f - <<EOF
-                    apiVersion: apps/v1
-                    kind: Deployment
-                    metadata:
-                      name: ${env.DEPLOYMENT_NAME}
-                      namespace: ${env.K8S_NAMESPACE}
-                    spec:
-                      replicas: 1
-                      selector:
-                        matchLabels:
-                          app: front-kwt
-                      template:
-                        metadata:
-                          labels:
-                            app: front-kwt
-                        spec:
-                          containers:
-                          - name: front-kwt
-                            image: wondookong/front-kwt:latest
-                            ports:
-                            - containerPort: 80
-                    EOF
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${env.DEPLOYMENT_NAME}
+  namespace: ${env.K8S_NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front-kwt
+  template:
+    metadata:
+      labels:
+        app: front-kwt
+    spec:
+      containers:
+      - name: front-kwt
+        image: wondookong/front-kwt:latest
+        ports:
+        - containerPort: 80
+EOF
                     """
-                            echo "Deployment ${env.DEPLOYMENT_NAME} exists or has been created."
-                        } catch (Exception e) {
-                            echo "Error creating deployment: ${e.getMessage()}"
+                        } else {
+                            echo "Deployment ${env.DEPLOYMENT_NAME} already exists."
                         }
                     }
                 }
