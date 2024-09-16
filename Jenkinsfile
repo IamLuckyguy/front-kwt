@@ -219,15 +219,15 @@ EOF
                     withCredentials([string(credentialsId: 'kubernetes-service-account', variable: 'KUBE_TOKEN')]) {
                         script {
                             try {
-                                sh "kubectl apply -f k8s/deployment.yaml -n ${env.K8S_NAMESPACE}"
-                                sh "kubectl apply -f k8s/service.yaml -n ${env.K8S_NAMESPACE}"
-                                sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
+                                sh "kubectl --token=$KUBE_TOKEN apply -f k8s/deployment.yaml -n ${env.K8S_NAMESPACE}"
+                                sh "kubectl --token=$KUBE_TOKEN apply -f k8s/service.yaml -n ${env.K8S_NAMESPACE}"
+                                sh "kubectl --token=$KUBE_TOKEN rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
                             } catch (Exception e) {
                                 echo "Deployment failed: ${e.message}"
                                 if (previousVersion) {
                                     echo "Rolling back to ${previousVersion}"
-                                    sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
-                                    sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
+                                    sh "kubectl --token=$KUBE_TOKEN set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
+                                    sh "kubectl --token=$KUBE_TOKEN rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
                                 } else {
                                     echo "No previous version available for rollback"
                                 }
