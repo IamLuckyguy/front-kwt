@@ -128,6 +128,7 @@ pipeline {
                         container('kubectl') {
                             script {
                                 sh """sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${params.IMAGE_TAG}|' k8s/deployment-${params.ENV}.yaml"""
+                                sh "cat k8s/deployment-${params.ENV}.yaml"
                             }
                         }
                     }
