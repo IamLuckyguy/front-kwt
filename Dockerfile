@@ -6,7 +6,7 @@ ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 COPY . .
 RUN npm run build
 
