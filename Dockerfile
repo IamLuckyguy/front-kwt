@@ -2,7 +2,7 @@
 FROM --platform=linux/amd64 node:20.17.0-alpine AS builder
 WORKDIR /app
 
-ARG NODE_ENV=dev
+ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 
 COPY package*.json ./
