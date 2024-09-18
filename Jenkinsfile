@@ -3,8 +3,10 @@ def previousVersion
 pipeline {
     agent {
         kubernetes {
-            yaml readFile('k8s/jenkins-pod-template.yaml')
-            podRetention(always())
+            node {
+                yaml readFile('k8s/jenkins-pod-template.yaml')
+                podRetention(always())
+            }
         }
     }
     parameters {
