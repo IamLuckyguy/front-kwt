@@ -9,7 +9,6 @@ pipeline {
     }
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: '', description: '배포할 이미지 태그 (비워두면 최신 빌드 번호 사용)')
-        string(name: 'ENV', defaultValue: 'dev', description: '배포할 환경 (e.g., dev, prod)')
     }
     environment {
         PROJECT_NAME = "kwt"
