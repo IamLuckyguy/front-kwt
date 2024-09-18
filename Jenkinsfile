@@ -129,13 +129,7 @@ pipeline {
                     steps {
                         container('kubectl') {
                             script {
-                                if (params.IMAGE_TAG?.trim()) {
-                                    sh """
-                        sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${params.IMAGE_TAG}|' k8s/deployment-${params.ENV}.yaml
-                    """
-                                } else {
-                                    echo "Skipping deployment file update as IMAGE_TAG is not provided."
-                                }
+                                sh """sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${params.IMAGE_TAG}|' k8s/deployment-${params.ENV}.yaml"""
                             }
                         }
                     }
