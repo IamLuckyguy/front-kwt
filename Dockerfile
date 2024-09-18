@@ -16,6 +16,9 @@ WORKDIR /app
 
 ENV NODE_ENV=${NODE_ENV}
 
+# Add global installation of next.js
+RUN npm install -g next
+
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
