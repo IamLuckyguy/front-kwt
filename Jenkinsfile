@@ -5,7 +5,6 @@ pipeline {
 
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: '', description: '배포할 이미지 태그 (비워두면 최신 빌드 번호 사용)')
-        string(name: 'ENV', defaultValue: 'dev', description: '배포할 환경 (e.g., dev, prod)')
     }
 
     environment {
@@ -130,9 +129,13 @@ pipeline {
                     steps {
                         container('kubectl') {
                             script {
-                                sh """
-                    sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}|' k8s/deployment-${params.ENV}.yaml
-                """
+                                if (params.IMAGE_TAG?.trim()) {
+                                    sh """
+                        sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${params.IMAGE_TAG}|' k8s/deployment-${params.ENV}.yaml
+                    """
+                                } else {
+                                    echo "Skipping deployment file update as IMAGE_TAG is not provided."
+                                }
                             }
                         }
                     }
