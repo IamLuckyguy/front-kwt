@@ -3,66 +3,24 @@ def previousVersion
 pipeline {
     agent {
         kubernetes {
-            yaml '''
-apiVersion: v1
-kind: Pod
-spec:
-  serviceAccountName: jenkins-sa
-  containers:
-    - name: jnlp
-      image: jenkins/inbound-agent:3261.v9c670a_4748a_9-1
-      resources:
-        requests:
-          memory: "512Mi"
-          cpu: "500m"
-        limits:
-          memory: "1024Mi"
-          cpu: "1000m"
-    - name: kaniko
-      image: gcr.io/kaniko-project/executor:debug
-      imagePullPolicy: Always
-      command:
-        - /busybox/cat
-      tty: true
-      resources:
-        requests:
-          memory: "1024Mi"
-          cpu: "1000m"
-        limits:
-          memory: "2048Mi"
-          cpu: "1500m"
-      volumeMounts:
-        - name: docker-config
-          mountPath: /kaniko/.docker
-    - name: kubectl
-      image: bitnami/kubectl:1.30.4
-      command:
-        - cat
-      tty: true
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-  volumes:
-    - name: docker-config
-      secret:
-        secretName: docker-credentials
-        items:
-          - key: .dockerconfigjson
-            path: config.json
-'''
+            yaml readFile('jenkins-pod-template.yaml')
             podRetention(always())
         }
     }
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: '', description: '배포할 이미지 태그 (비워두면 최신 빌드 번호 사용)')
+        string(name: 'ENV', defaultValue: 'dev', description: '배포할 환경 (e.g., dev, prod)')
     }
     environment {
+        PROJECT_NAME = "kwt"
+        APP_NAME = "front"
         DOCKER_CONFIG = credentials('docker-hub-credentials')
-        DOCKER_IMAGE = "wondookong/front-kwt"
         DOCKER_TAG = "${params.IMAGE_TAG ?: env.BUILD_NUMBER}"
-        K8S_NAMESPACE = "front-kwt"
-        DEPLOYMENT_NAME = "front-kwt-deployment"
-        SERVICE_NAME = "front-kwt-service"
+        DOCKER_USERNAME = "wondookong"
+        K8S_NAMESPACE = "${PROJECT_NAME}-${params.ENV}"
+        DOCKER_IMAGE = "${DOCKER_USERNAME}/${K8S_NAMESPACE}-${APP_NAME}"
+        DEPLOYMENT_NAME = "${APP_NAME}-deployment"
+        SERVICE_NAME = "${APP_NAME}-service"
     }
     stages {
         stage('Create Namespace if not exists') {
@@ -95,31 +53,7 @@ spec:
 
                         if (!deploymentExists) {
                             echo "Deployment does not exist. Creating new Deployment..."
-                            sh """
-kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} || \
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${env.DEPLOYMENT_NAME}
-  namespace: ${env.K8S_NAMESPACE}
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: front-kwt
-  template:
-    metadata:
-      labels:
-        app: front-kwt
-    spec:
-      containers:
-      - name: front-kwt
-        image: wondookong/front-kwt:latest
-        ports:
-        - containerPort: 80
-EOF
-"""
+                            sh "kubectl apply -f k8s/deployment-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
                         } else {
                             echo "Deployment already exists. Skipping creation."
                         }
@@ -138,23 +72,7 @@ EOF
 
                         if (!serviceExists) {
                             echo "Service does not exist. Creating new Service..."
-                            sh """
-                    kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${env.SERVICE_NAME}
-  namespace: ${env.K8S_NAMESPACE}
-spec:
-  selector:
-    app: front-kwt
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  type: ClusterIP
-EOF
-                    """
+                            sh "kubectl apply -f k8s/service-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
                         } else {
                             echo "Service already exists. Skipping creation."
                         }
@@ -185,18 +103,17 @@ EOF
         }
         stage('Build and Push with Kaniko') {
             steps {
-                echo "DOCKER_IMAGE: ${env.DOCKER_IMAGE}"
-                echo "DOCKER_TAG: ${env.DOCKER_TAG}"
+                echo "Building and Pushing image"
                 container('kaniko') {
-                    withEnv(['DOCKER_CONFIG=/kaniko/.docker'])
-                    {
+                    withEnv(['DOCKER_CONFIG=/kaniko/.docker']) {
                         sh """
                             /kaniko/executor \\
                             --context `pwd` \\
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
-                            --verbosity debug
+                            --verbosity debug \\
+                            --platform linux/amd64
                         """
                     }
                 }
@@ -207,7 +124,7 @@ EOF
                 container('kubectl') {
                     script {
                         sh """
-                    sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}|' k8s/deployment.yaml
+                    sed -i 's|image: .*|image: ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}|' k8s/deployment-${params.ENV}.yaml
                 """
                     }
                 }
@@ -218,15 +135,15 @@ EOF
                 container('kubectl') {
                     script {
                         try {
-                            sh "kubectl apply -f k8s/deployment.yaml -n ${env.K8S_NAMESPACE}"
-                            sh "kubectl apply -f k8s/service.yaml -n ${env.K8S_NAMESPACE}"
-                            sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
+                            sh "kubectl apply -f k8s/deployment-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
+                            sh "kubectl apply -f k8s/service-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
+                            sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
                         } catch (Exception e) {
                             echo "Deployment failed: ${e.message}"
                             if (previousVersion) {
                                 echo "Rolling back to ${previousVersion}"
                                 sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
-                                sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=300s"
+                                sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
                             } else {
                                 echo "No previous version available for rollback"
                             }
