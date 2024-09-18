@@ -152,7 +152,7 @@ pipeline {
                                     echo "Deployment failed: ${e.message}"
                                     if (previousVersion) {
                                         echo "Rolling back to ${previousVersion}"
-                                        sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.DEPLOYMENT_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
+                                        sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.APP_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
                                         sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
                                     } else {
                                         echo "No previous version available for rollback"
