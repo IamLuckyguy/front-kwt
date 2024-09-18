@@ -16,8 +16,6 @@ pipeline {
         DOCKER_USERNAME = "wondookong"
         K8S_NAMESPACE = "${PROJECT_NAME}-${params.ENV}"
         DOCKER_IMAGE = "${DOCKER_USERNAME}/${K8S_NAMESPACE}-${APP_NAME}"
-        DEPLOYMENT_NAME = "${APP_NAME}-deployment"
-        SERVICE_NAME = "${APP_NAME}-service"
     }
 
     stages {
@@ -54,7 +52,7 @@ pipeline {
                         container('kubectl') {
                             script {
                                 def deploymentExists = sh(
-                                        script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE}",
+                                        script: "kubectl get deployment ${env.APP_NAME} -n ${env.K8S_NAMESPACE}",
                                         returnStatus: true
                                 ) == 0
 
@@ -73,7 +71,7 @@ pipeline {
                         container('kubectl') {
                             script {
                                 def serviceExists = sh(
-                                        script: "kubectl get service ${env.SERVICE_NAME} -n ${env.K8S_NAMESPACE}",
+                                        script: "kubectl get service ${env.APP_NAME} -n ${env.K8S_NAMESPACE}",
                                         returnStatus: true
                                 ) == 0
 
@@ -92,10 +90,10 @@ pipeline {
                         container('kubectl') {
                             script {
                                 echo "K8S_NAMESPACE: ${env.K8S_NAMESPACE}"
-                                echo "DEPLOYMENT_NAME: ${env.DEPLOYMENT_NAME}"
+                                echo "DEPLOYMENT_NAME: ${env.APP_NAME}"
                                 try {
                                     previousVersion = sh(
-                                            script: "kubectl get deployment ${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} -o=jsonpath='{.spec.template.spec.containers[0].image}'",
+                                            script: "kubectl get deployment ${env.APP_NAME} -n ${env.K8S_NAMESPACE} -o=jsonpath='{.spec.template.spec.containers[0].image}'",
                                             returnStdout: true
                                     ).trim()
                                     echo "Previous version: ${previousVersion}"
@@ -141,13 +139,13 @@ pipeline {
                                 try {
                                     sh "kubectl apply -f k8s/deployment-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
                                     sh "kubectl apply -f k8s/service-${params.ENV}.yaml -n ${env.K8S_NAMESPACE}"
-                                    sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
+                                    sh "kubectl rollout status deployment/${env.APP_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
                                 } catch (Exception e) {
                                     echo "Deployment failed: ${e.message}"
                                     if (previousVersion) {
                                         echo "Rolling back to ${previousVersion}"
-                                        sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.APP_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
-                                        sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
+                                        sh "kubectl set image deployment/${env.APP_NAME} ${env.APP_NAME}=${previousVersion} -n ${env.K8S_NAMESPACE}"
+                                        sh "kubectl rollout status deployment/${env.APP_NAME} -n ${env.K8S_NAMESPACE} --timeout=180s"
                                     } else {
                                         echo "No previous version available for rollback"
                                     }
