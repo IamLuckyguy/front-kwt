@@ -23,7 +23,6 @@ pipeline {
             agent {
                 kubernetes {
                     yaml "${env.K8S_CONFIG}"
-                    podRetention always()
                 }
             }
 
