@@ -120,8 +120,7 @@ pipeline {
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
-                            --verbosity debug \\
-                            --platform linux/amd64
+                            --verbosity debug
                         """
                             }
                         }
