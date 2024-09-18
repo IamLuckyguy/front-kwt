@@ -117,7 +117,8 @@ pipeline {
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
-                            --verbosity debug
+                            --verbosity debug \\
+                            --build-arg NODE_ENV=${params.ENV}
                         """
                             }
                         }
