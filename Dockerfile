@@ -14,10 +14,11 @@ RUN npm run build
 FROM --platform=linux/amd64 node:20.17.0-alpine AS runner
 WORKDIR /app
 
+ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 
 # Add global installation of next.js
-RUN npm install -g next
+#RUN npm install -g next
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
