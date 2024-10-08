@@ -2,7 +2,7 @@
 FROM --platform=linux/amd64 node:20.17.0-alpine AS builder
 WORKDIR /app
 
-ARG NODE_ENV=development
+ARG NODE_ENV=dev
 ENV NODE_ENV=${NODE_ENV}
 
 COPY package*.json ./
@@ -14,7 +14,7 @@ RUN npm run build
 FROM --platform=linux/amd64 node:20.17.0-alpine AS runner
 WORKDIR /app
 
-ARG NODE_ENV=development
+ARG NODE_ENV=dev
 ENV NODE_ENV=${NODE_ENV}
 ENV PATH /app/node_modules/.bin:$PATH
 
