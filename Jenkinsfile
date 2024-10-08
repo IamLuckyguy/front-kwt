@@ -8,8 +8,8 @@ pipeline {
     }
 
     environment {
-        PROJECT_NAME = "kwt"
-        APP_NAME = "front"
+        PROJECT_NAME = "${params.PROJECT_NAME}"
+        APP_NAME = "${params.APP_NAME}"
         DOCKER_CONFIG = credentials('docker-hub-credentials')
         K8S_CONFIG = readFile 'k8s/jenkins-pod-template.yaml'
         DOCKER_TAG = "${params.IMAGE_TAG ?: env.BUILD_NUMBER}"
