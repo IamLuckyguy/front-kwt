@@ -25,6 +25,14 @@ const AsciiAnimation: React.FC = () => {
 
   const options = ['Explorer', 'Contact'];
 
+  const handleOptionSelect = useCallback((index: number) => {
+    if (options[index] === 'Contact') {
+      router.push('/contact');
+    } else if (options[index] === 'Explorer') {
+      router.push('/explorer');
+    }
+  }, [options, router]);
+
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
     if (!animationComplete) {
       setSkipAnimation(true);
@@ -34,17 +42,17 @@ const AsciiAnimation: React.FC = () => {
     switch (event.key) {
       case 'ArrowUp':
         playBeep();
-        setSelectedOption((prev) => (prev > 0 ? prev - 1 : prev + 1));
+        setSelectedOption((prev) => (prev > 0 ? prev - 1 : options.length - 1));
         break;
       case 'ArrowDown':
         playBeep();
-        setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : prev - 1));
+        setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
         break;
       case 'Enter':
         handleOptionSelect(selectedOption);
         break;
     }
-  }, [animationComplete, selectedOption]);
+  }, [animationComplete, selectedOption, options.length, handleOptionSelect]);
 
   const handleMouseOver = useCallback((index: number) => {
     if (hoveredIndex !== index) {
@@ -53,14 +61,6 @@ const AsciiAnimation: React.FC = () => {
       setSelectedOption(index);
     }
   }, [hoveredIndex]);
-
-  const handleOptionSelect = (index: number) => {
-    if (options[index] === 'Contact') {
-      router.push('/contact');
-    } else if (options[index] === 'Explorer') {
-      router.push('/explorer');
-    }
-  };
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +106,7 @@ const AsciiAnimation: React.FC = () => {
   }, [skipAnimation]);
 
   useEffect(() => {
-    const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {
+    const handleGlobalKeyDown = () => {
       if (!animationComplete) {
         setSkipAnimation(true);
       }

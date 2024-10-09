@@ -201,9 +201,12 @@ const Explorer: React.FC = () => {
     if (hoveredModule !== moduleName) {
       setHoveredModule(moduleName);
       playBeep();
-      setSelectedModuleIndex(modulePositions.findIndex(m => m.name === moduleName));
+      setSelectedModuleIndex((prevIndex) => {
+        const newIndex = modulePositions.findIndex(m => m.name === moduleName);
+        return newIndex !== -1 ? newIndex : prevIndex;
+      });
     }
-  }, [hoveredModule, modulePositions, setSelectedModuleIndex]);
+  }, [hoveredModule, setSelectedModuleIndex]);
 
   return (
     <div 
