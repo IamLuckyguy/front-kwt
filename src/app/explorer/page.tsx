@@ -1,4 +1,4 @@
-import AsciiAnimation from '@/components/AsciiAnimation';
+import AsciiAnimation from '@/components/Explorer';
 
 export default function Home() {
   return (
