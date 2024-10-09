@@ -15,7 +15,7 @@ spec:
   selector:
     app.kubernetes.io/name: front
     app.kubernetes.io/instance: front-prod
-    app.kubernetes.io/component: backend
+    app.kubernetes.io/component: frontend
     app.kubernetes.io/part-of: k8s-kwt
     env: prod
   ports:
