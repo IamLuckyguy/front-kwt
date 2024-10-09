@@ -222,10 +222,10 @@ const Explorer: React.FC = () => {
           {displayLines.map((line, rowIndex) => (
             <div key={rowIndex}>
               {line && line.split('').map((char, colIndex) => {
-                const module = modulePositions.find(
+                const moduleItem = modulePositions.find(
                   m => m.row === rowIndex && colIndex >= m.startCol && colIndex <= m.endCol
                 );
-                const isSelected = module && modulePositions.findIndex(m => m.name === module.name) === selectedModuleIndex;
+                const isSelected = moduleItem && modulePositions.findIndex(m => m.name === moduleItem.name) === selectedModuleIndex;
                 return (
                   <span
                     key={colIndex}
@@ -233,16 +233,16 @@ const Explorer: React.FC = () => {
                     style={{
                       color: isSelected ? 'black' : 'inherit',
                       backgroundColor: isSelected ? 'green' : 'transparent',
-                      cursor: module ? 'pointer' : 'default'
+                      cursor: moduleItem ? 'pointer' : 'default'
                     }}
                     onMouseOver={() => {
-                        if (module) {
-                            handleMouseOver(module.name);
+                        if (moduleItem) {
+                            handleMouseOver(moduleItem.name);
                         }
                     }}
                     onClick={() => {
-                      if (module) {
-                        handleClick(modulePositions.findIndex(m => m.name === module.name));
+                      if (moduleItem) {
+                        handleClick(modulePositions.findIndex(m => m.name === moduleItem.name));
                       }
                     }}
                   >

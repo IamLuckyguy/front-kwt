@@ -18,6 +18,16 @@ const ContactForm: React.FC = () => {
   const [isComposing, setIsComposing] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
+  const handleBack = () => {
+    router.push('/');
+  };
+
+  const handleSubmit = () => {
+    // 여기에 실제 이메일 전송 로직을 구현합니다.
+    console.log('Sending email:', { from, to: 'kwt@kwt.co.kr', subject, content });
+    setSubmitted(true);
+  };
+
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Tab' && !isComposing) {
       event.preventDefault();
@@ -47,7 +57,7 @@ const ContactForm: React.FC = () => {
         handleBack();
       }
     }
-  }, [isComposing, selectedField]);
+  }, [isComposing, selectedField, handleSubmit, handleBack]);
 
   useEffect(() => {
     // 선택된 필드에 따라 포커스 설정
@@ -57,16 +67,6 @@ const ContactForm: React.FC = () => {
     else if (selectedField === 'sendMail') sendMailRef.current?.focus();
     else if (selectedField === 'back') backRef.current?.focus();
   }, [selectedField]);
-
-  const handleBack = () => {
-    router.push('/');
-  };
-
-  const handleSubmit = () => {
-    // 여기에 실제 이메일 전송 로직을 구현합니다.
-    console.log('Sending email:', { from, to: 'kwt@kwt.co.kr', subject, content });
-    setSubmitted(true);
-  };
 
   useEffect(() => {
     if (submitted && countdown > 0) {
