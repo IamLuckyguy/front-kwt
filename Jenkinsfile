@@ -107,7 +107,7 @@ pipeline {
                 }
                 stage('Build and Push with Kaniko') {
                     steps {
-                        echo "멀티플랫폼 이미지 빌드 및 이미지 푸시"
+                        echo "Building and Pushing image"
                         container('kaniko') {
                             withEnv(['DOCKER_CONFIG=/kaniko/.docker']) {
                                 sh """
@@ -116,10 +116,7 @@ pipeline {
                             --destination ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} \\
                             --destination ${env.DOCKER_IMAGE}:latest \\
                             --dockerfile Dockerfile \\
-                            --build-arg NODE_ENV=${params.ENV} \\
-                            --platform linux/amd64,linux/arm64 \\
-                            --cache=true \\
-                            --cache-ttl=24h
+                            --build-arg NODE_ENV=${params.ENV}
                         """
                             }
                         }
