@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, KeyboardEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { playBeep } from '@/utils/audio';
+import { useMemo } from 'react';
 
 const asciiArt = `
 888    d8P  888       888 88888888888      .d8888b.   .d88888b.      888    d8P  8888888b.  
@@ -15,6 +16,8 @@ const asciiArt = `
 888    Y88b 888P     Y888     888     Y8P  "Y8888P"   "Y88888P"  Y8P 888    Y88b 888   T88b 
 `.trim().split('\n');
 
+const options = ['Explorer', 'Contact'];
+
 const AsciiAnimation: React.FC = () => {
   const router = useRouter();
   const [displayLines, setDisplayLines] = useState<string[]>(Array(asciiArt.length).fill(''));
@@ -22,8 +25,6 @@ const AsciiAnimation: React.FC = () => {
   const [animationComplete, setAnimationComplete] = useState<boolean>(false);
   const [skipAnimation, setSkipAnimation] = useState<boolean>(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
-  const options = ['Explorer', 'Contact'];
 
   const handleOptionSelect = useCallback((index: number) => {
     if (options[index] === 'Contact') {
@@ -136,15 +137,16 @@ const AsciiAnimation: React.FC = () => {
     <div 
       id="ascii-animation"
       ref={containerRef}
-      className="font-mono text-sm sm:text-base md:text-lg lg:text-xl whitespace-pre bg-black text-green-500 p-4"
+      className="font-mono text-[0.3rem] xs:text-[0.4rem] sm:text-xs md:text-sm lg:text-base whitespace-pre bg-black text-green-500 p-1 xs:p-2 sm:p-4"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      // 포커스 시 아웃라인을 제거하려면 다음 스타일을 추가하세요
       style={{ outline: 'none' }}
     >
-      <pre>{displayLines.join('\n')}</pre>
+      <div className="overflow-x-auto">
+        <pre className="inline-block text-center">{displayLines.join('\n')}</pre>
+      </div>
       {animationComplete && (
-        <div className="mt-4">
+        <div className="mt-4 text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl">
           {options.map((option, index) => (
             <div 
               key={option}

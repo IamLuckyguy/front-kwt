@@ -211,48 +211,50 @@ const Explorer: React.FC = () => {
   return (
     <div 
       ref={containerRef} 
-      className="font-mono text-sm sm:text-base md:text-lg lg:text-xl whitespace-pre bg-black text-green-500 p-4 h-screen overflow-auto" 
+      className="font-mono text-[0.35rem] xs:text-[0.45rem] sm:text-xs md:text-sm lg:text-base bg-black text-green-500 p-1 xs:p-2 sm:p-4 h-screen overflow-auto" 
       onKeyDown={handleKeyDown} 
       tabIndex={0}
       style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
       <div>
-        <h1 className="text-2xl mb-4">Explorer</h1>
-        <pre style={{ fontFamily: 'monospace', whiteSpace: 'pre', lineHeight: '0.95em' }}>
-          {displayLines.map((line, rowIndex) => (
-            <div key={rowIndex}>
-              {line && line.split('').map((char, colIndex) => {
-                const moduleItem = modulePositions.find(
-                  m => m.row === rowIndex && colIndex >= m.startCol && colIndex <= m.endCol
-                );
-                const isSelected = moduleItem && modulePositions.findIndex(m => m.name === moduleItem.name) === selectedModuleIndex;
-                return (
-                  <span
-                    key={colIndex}
-                    ref={isSelected ? selectedModuleRef : null}
-                    style={{
-                      color: isSelected ? 'black' : 'inherit',
-                      backgroundColor: isSelected ? 'green' : 'transparent',
-                      cursor: moduleItem ? 'pointer' : 'default'
-                    }}
-                    onMouseOver={() => {
+        <h1 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">Explorer</h1>
+        <div>
+          <pre style={{ fontFamily: 'monospace', lineHeight: '1em' }}>
+            {displayLines.map((line, rowIndex) => (
+              <div key={rowIndex} style={{ whiteSpace: 'pre' }}>
+                {line && line.split('').map((char, colIndex) => {
+                  const moduleItem = modulePositions.find(
+                    m => m.row === rowIndex && colIndex >= m.startCol && colIndex <= m.endCol
+                  );
+                  const isSelected = moduleItem && modulePositions.findIndex(m => m.name === moduleItem.name) === selectedModuleIndex;
+                  return (
+                    <span
+                      key={colIndex}
+                      ref={isSelected ? selectedModuleRef : null}
+                      style={{
+                        color: isSelected ? 'black' : 'inherit',
+                        backgroundColor: isSelected ? 'green' : 'transparent',
+                        cursor: moduleItem ? 'pointer' : 'default'
+                      }}
+                      onMouseOver={() => {
                         if (moduleItem) {
-                            handleMouseOver(moduleItem.name);
+                          handleMouseOver(moduleItem.name);
                         }
-                    }}
-                    onClick={() => {
-                      if (moduleItem) {
-                        handleClick(modulePositions.findIndex(m => m.name === moduleItem.name));
-                      }
-                    }}
-                  >
-                    {char}
-                  </span>
-                );
-              })}
-            </div>
-          ))}
-        </pre>
+                      }}
+                      onClick={() => {
+                        if (moduleItem) {
+                          handleClick(modulePositions.findIndex(m => m.name === moduleItem.name));
+                        }
+                      }}
+                    >
+                      {char}
+                    </span>
+                  );
+                })}
+              </div>
+            ))}
+          </pre>
+        </div>
       </div>
     </div>
   );
