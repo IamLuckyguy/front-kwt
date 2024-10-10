@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback, KeyboardEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { playBeep } from '@/utils/audio';
-import { useMemo } from 'react';
 
 const asciiArt = `
 888    d8P  888       888 88888888888      .d8888b.   .d88888b.      888    d8P  8888888b.  
