@@ -13,7 +13,7 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
       screens: {
-        'xs': '375px',
+        'xs': '400px',
       }
     },
   },

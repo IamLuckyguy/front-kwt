@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, KeyboardEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { playBeep } from '@/utils/audio';
+import { playBeep, playSelectSound } from '@/utils/audio';
 
 const asciiArt = `
 888    d8P  888       888 88888888888      .d8888b.   .d88888b.      888    d8P  8888888b.  
@@ -26,6 +26,7 @@ const AsciiAnimation: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleOptionSelect = useCallback((index: number) => {
+    playSelectSound();
     if (options[index] === 'Contact') {
       router.push('/contact');
     } else if (options[index] === 'Explorer') {
@@ -49,6 +50,7 @@ const AsciiAnimation: React.FC = () => {
         setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
         break;
       case 'Enter':
+        playSelectSound();
         handleOptionSelect(selectedOption);
         break;
     }

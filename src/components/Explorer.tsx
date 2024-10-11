@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, KeyboardEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { playBeep } from '@/utils/audio';
+import { playBeep, playSelectSound } from '@/utils/audio';
 
 const asciiArt = [
   "                                                                                                    ",
@@ -125,10 +125,10 @@ const Explorer: React.FC = () => {
   }, [skipAnimation]);
 
   useEffect(() => {
-    containerRef.current?.focus();
-  }, []);
+    if (containerRef.current) {
+      containerRef.current.focus();
+    }
 
-  useEffect(() => {
     if (selectedModuleRef.current && containerRef.current) {
       const container = containerRef.current;
       const selectedElement = selectedModuleRef.current;
@@ -143,6 +143,21 @@ const Explorer: React.FC = () => {
       }
     }
   }, [selectedModuleIndex]);
+
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      if (!animationComplete) {
+        setSkipAnimation(true);
+        return;
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+
+    return () => {
+      window.removeEventListener('click', handleGlobalClick);
+    };
+  }, [animationComplete]);
 
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
     if (!animationComplete) {
@@ -183,6 +198,7 @@ const Explorer: React.FC = () => {
         });
         break;
       case 'Enter':
+        playSelectSound();
         const selectedModule = modulePositions[selectedModuleIndex].name;
         router.push(`/explorer/${selectedModule}`);
         break;
@@ -192,6 +208,7 @@ const Explorer: React.FC = () => {
   }, [animationComplete, selectedModuleIndex, router]);
 
   const handleClick = (index: number) => {
+    playSelectSound();
     setSelectedModuleIndex(index);
     const selectedModule = modulePositions[index].name;
     router.push(`/explorer/${selectedModule}`);
@@ -219,7 +236,7 @@ const Explorer: React.FC = () => {
       <div>
         <h1 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">Explorer</h1>
         <div>
-          <pre style={{ fontFamily: 'monospace', lineHeight: '1em' }}>
+          <pre className="explorer-ascii-art">
             {displayLines.map((line, rowIndex) => (
               <div key={rowIndex} style={{ whiteSpace: 'pre' }}>
                 {line && line.split('').map((char, colIndex) => {
