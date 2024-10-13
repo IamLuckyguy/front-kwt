@@ -5,17 +5,17 @@ import { useRouter } from 'next/navigation';
 import { playBeep, playSelectSound } from '@/utils/audio';
 
 const asciiArt = `
-888    d8P  888       888 88888888888      .d8888b.   .d88888b.      888    d8P  8888888b.  
-888   d8P   888   o   888     888         d88P  Y88b d88P" "Y88b     888   d8P   888   Y88b 
-888  d8P    888  d8b  888     888         888    888 888     888     888  d8P    888    888 
-888d88K     888 d888b 888     888         888        888     888     888d88K     888   d88P 
-8888888b    888d88888b888     888         888        888     888     8888888b    8888888P"  
-888  Y88b   88888P Y88888     888         888    888 888     888     888  Y88b   888 T88b   
-888   Y88b  8888P   Y8888     888     d8b Y88b  d88P Y88b. .d88P d8b 888   Y88b  888  T88b  
-888    Y88b 888P     Y888     888     Y8P  "Y8888P"   "Y88888P"  Y8P 888    Y88b 888   T88b 
+888    d8P  888       888 88888888888      .d8888b.   .d88888b.      888    d8P  8888888b. 
+888   d8P   888   o   888     888         d88P  Y88b d88P" "Y88b     888   d8P   888   Y88b
+888  d8P    888  d8b  888     888         888    888 888     888     888  d8P    888    888
+888d88K     888 d888b 888     888         888        888     888     888d88K     888   d88P
+8888888b    888d88888b888     888         888        888     888     8888888b    8888888P" 
+888  Y88b   88888P Y88888     888         888    888 888     888     888  Y88b   888 T88b  
+888   Y88b  8888P   Y8888     888     d8b Y88b  d88P Y88b. .d88P d8b 888   Y88b  888  T88b 
+888    Y88b 888P     Y888     888     Y8P  "Y8888P"   "Y88888P"  Y8P 888    Y88b 888   T88b
 `.trim().split('\n');
 
-const options = ['Explorer', 'Contact'];
+const options = ['둘러보기', '연락하기'];
 
 const AsciiAnimation: React.FC = () => {
   const router = useRouter();
@@ -27,9 +27,9 @@ const AsciiAnimation: React.FC = () => {
 
   const handleOptionSelect = useCallback((index: number) => {
     playSelectSound();
-    if (options[index] === 'Contact') {
+    if (options[index] === '연락하기') {
       router.push('/contact');
-    } else if (options[index] === 'Explorer') {
+    } else if (options[index] === '둘러보기') {
       router.push('/explorer');
     }
   }, [options, router]);
@@ -50,11 +50,12 @@ const AsciiAnimation: React.FC = () => {
         setSelectedOption((prev) => (prev < options.length - 1 ? prev + 1 : 0));
         break;
       case 'Enter':
+      case ' ':
         playSelectSound();
         handleOptionSelect(selectedOption);
         break;
     }
-  }, [animationComplete, selectedOption, options.length, handleOptionSelect]);
+  }, [animationComplete, selectedOption, handleOptionSelect]);
 
   const handleMouseOver = useCallback((index: number) => {
     if (hoveredIndex !== index) {
@@ -138,10 +139,10 @@ const AsciiAnimation: React.FC = () => {
     <div 
       id="ascii-animation"
       ref={containerRef}
-      className="font-mono text-[0.3rem] xs:text-[0.4rem] sm:text-xs md:text-sm lg:text-base whitespace-pre bg-black text-green-500 p-1 xs:p-2 sm:p-4"
+      className="font-mono text-[0.3rem] xs:text-[0.4rem] sm:text-xs md:text-sm lg:text-sm whitespace-pre bg-black text-green-500 p-1 xs:p-2 sm:p-4"
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      style={{ outline: 'none' }}
+      // style={{ outline: 'none' }}
     >
       <div className="overflow-x-auto">
         <pre className="inline-block text-center">{displayLines.join('\n')}</pre>

@@ -198,6 +198,7 @@ const Explorer: React.FC = () => {
         });
         break;
       case 'Enter':
+      case ' ':
         playSelectSound();
         const selectedModule = modulePositions[selectedModuleIndex].name;
         router.push(`/explorer/${selectedModule}`);
@@ -234,7 +235,7 @@ const Explorer: React.FC = () => {
       style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
       <div>
-        <h1 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">Explorer</h1>
+        <h1 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">둘러보기</h1>
         <div>
           <pre className="explorer-ascii-art">
             {displayLines.map((line, rowIndex) => (

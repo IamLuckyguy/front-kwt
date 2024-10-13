@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import TypingText from '@/components/TypingText';
+import { useRouter } from 'next/navigation';
+import ServiceInfo from '@/components/ServiceInfo';
+import useKeyboardNavigation from '@/hooks/useKeyboardNavigation';
 
-const jenkinsAsciiArt = `
+const asciiArt = `
 @@@@@@@@@@@@@@@@@@@@@@@#########@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@$##############$@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@######         ####@@@@@@@@@@@@@@
@@ -75,37 +77,37 @@ const jenkinsAsciiArt = `
 @@@@@@@@@@@@@@@@@@@@@@@###########@@@@@@@@@@@@@@@@
 `;
 
-const jenkinsInfo = {
-  version: '2.462.2',
-  access: 'https://jenkins.kwt.co.kr',
-  usage: [
-    '로그인',
-    '새 작업 생성',
-    '파이프라인 구성',
-    '빌드 실행',
-    '결과 확인'
-  ]
+const ComponentInfo = {
+    title: '지속적 통합/배포',
+    serviceName: 'Jenkins',
+    version: '2.462.2',
+    url: 'https://jenkins.kwt.co.kr',
+    information: '모든 어플리케이션의 통합과 배포를 담당하고 있습니다.' +
+        ' Jenkins 네임스페이스에 소속되어 있으며 단일 환경으로,' +
+        ' 내부 스케쥴과 파이프라인에서 환경을 구분하여 배포합니다.',
 };
 
 const JenkinsPage: React.FC = () => {
-  return (
-      <div className="flex flex-col md:flex-row items-start justify-center min-h-screen bg-black text-green-500 p-4">
-        <div className="w-full md:w-1/2">
-          <TypingText text={jenkinsAsciiArt} speed={10} />
-        </div>
-        <div className="w-full md:w-1/2 font-mono text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
-          <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4">Jenkins</h1>
-          <p>Version: {jenkinsInfo.version}</p>
-          <p>Access: {jenkinsInfo.access}</p>
-          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl mt-4 mb-2">Usage:</h2>
-          <ol className="list-decimal list-inside">
-            {jenkinsInfo.usage.map((step, index) => (
-                <li key={index}>{step}</li>
-            ))}
-          </ol>
-        </div>
-      </div>
-  );
+    const router = useRouter();
+
+    const { selectedButton, handleMouseOver, handleButtonClick } = useKeyboardNavigation(
+        () => window.open(ComponentInfo.url, '_blank'),
+        () => router.push('/explorer')
+    );
+
+    return (
+        <ServiceInfo
+            title={ComponentInfo.title}
+            asciiArt={asciiArt}
+            serviceName={ComponentInfo.serviceName}
+            version={ComponentInfo.version}
+            information={ComponentInfo.information}
+            url={ComponentInfo.url}
+            selectedButton={selectedButton}
+            handleMouseOver={handleMouseOver}
+            handleButtonClick={handleButtonClick}
+        />
+    );
 };
 
 export default JenkinsPage;

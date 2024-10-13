@@ -1,47 +1,47 @@
 @media (min-width: 300px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.4rem;
         font-size: 0.32rem;
     }
 }
 
 @media (min-width: 380px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.4rem;
         font-size: 0.36rem;
     }
 }
 
 @media (min-width: 420px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.4rem;
         font-size: 0.5rem;
     }
 }
 
 @media (min-width: 600px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.5rem;
         font-size: 0.6rem;
     }
 }
 
 @media (min-width: 700px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.5rem;
         font-size: 0.7rem;
     }
 }
 
 @media (min-width: 900px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.6rem;
         font-size: 0.8rem;;
     }
 }
 
 @media (min-width: 1280px) {
-    .explorer-layout pre {
+    #ascii-art pre {
         line-height: 0.7rem;
         font-size: 1.0rem;
     }

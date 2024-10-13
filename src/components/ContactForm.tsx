@@ -24,7 +24,6 @@ const ContactForm: React.FC = () => {
 
   const handleSubmit = () => {
     // 여기에 실제 이메일 전송 로직을 구현합니다.
-    console.log('Sending email:', { from, to: 'kwt@kwt.co.kr', subject, content });
     setSubmitted(true);
   };
 
@@ -100,12 +99,12 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="font-mono text-green-500 bg-black p-4 h-screen">
-      <h1 className="text-2xl mb-4">Contact</h1>
+      <h1 className="text-2xl mb-4">연락하기</h1>
       <div className="mb-4">
-        <p>To: kwt@kwt.co.kr</p>
+        <p>받는사람: kwt@kwt.co.kr</p>
       </div>
       <div className="mb-4">
-        <label htmlFor="from" className="block mb-2">From:</label>
+        <label htmlFor="from" className="block mb-2">보내는사람:</label>
         <input
           ref={fromRef}
           id="from"
@@ -121,7 +120,7 @@ const ContactForm: React.FC = () => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="subject" className="block mb-2">Subject:</label>
+        <label htmlFor="subject" className="block mb-2">제목:</label>
         <input
           ref={subjectRef}
           id="subject"
@@ -137,7 +136,7 @@ const ContactForm: React.FC = () => {
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="content" className="block mb-2">Content:</label>
+        <label htmlFor="content" className="block mb-2">내용:</label>
         <textarea
           ref={contentRef}
           id="content"
@@ -164,7 +163,7 @@ const ContactForm: React.FC = () => {
           }`}
           style={{ outline: 'none' }}
         >
-          Send Mail
+          메일 보내기
         </button>
         <button
           ref={backRef}
@@ -178,7 +177,7 @@ const ContactForm: React.FC = () => {
           }`}
           style={{ outline: 'none' }}
         >
-          Back
+          뒤로
         </button>
       </div>
     </div>

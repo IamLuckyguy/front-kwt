@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 interface TypingTextProps {
     text: string;
     speed?: number;
+    tag?: 'div' | 'pre';
 }
 
-const TypingText: React.FC<TypingTextProps> = ({ text, speed = 50 }) => {
+const TypingText: React.FC<TypingTextProps> = ({ text, speed = 50, tag }) => {
     const [displayLines, setDisplayLines] = useState<string[]>(Array(text.split('\n').length).fill(''));
 
     useEffect(() => {
@@ -41,15 +42,25 @@ const TypingText: React.FC<TypingTextProps> = ({ text, speed = 50 }) => {
         });
 
         return () => timers.forEach(clearTimeout);
-    }, [text, speed]);
+    }, [text, speed, tag]);
 
-    return (
-        <pre>
-      {displayLines.map((line, index) => (
-          <div key={index}>{line}</div>
-      ))}
-    </pre>
-    );
+    if (tag === 'div') {
+        return (
+            <div>
+          {displayLines.map((line, index) => (
+              <div key={index}>{line}</div>
+          ))}
+        </div>
+        );
+    } else if (tag === 'pre') {
+        return (
+            <pre>
+          {displayLines.map((line, index) => (
+              <div key={index}>{line}</div>
+          ))}
+        </pre>
+        );
+    }
 };
 
 export default TypingText;

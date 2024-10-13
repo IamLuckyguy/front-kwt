@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
+import {useRouter} from "next/navigation";
+import useKeyboardNavigation from "@/hooks/useKeyboardNavigation";
+import ServiceInfo from "@/components/ServiceInfo";
 
-const nginxAsciiArt = `
+const asciiArt = `
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@:: @@@@@@@@@@@@@@@@@@@@@@@
@@ -55,40 +58,35 @@ const nginxAsciiArt = `
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 `;
 
-const nginxInfo = {
-    version: '2.401.1',
-    plugins: '1500+',
-    access: 'http://jenkins.example.com:8080',
-    usage: [
-      '1. 로그인',
-      '2. 새 작업 생성',
-      '3. 파이프라인 구성',
-      '4. 빌드 실행',
-      '5. 결과 확인'
-    ]
-  };
-  
-  const NginxPage: React.FC = () => {
-    return (
-      <div className="flex items-start justify-center min-h-screen bg-black text-green-500 p-4">
-        <div className="w-1/2 mr-4">
-          <pre className="text-xs">{nginxAsciiArt}</pre>
-        </div>
-        <div className="w-1/2 font-mono">
-          <h1 className="text-2xl mb-4">Nginx</h1>
-          <p>Version: {nginxInfo.version}</p>
-          <p>Plugins: {nginxInfo.plugins}</p>
-          <p>Access: {nginxInfo.access}</p>
-          <h2 className="text-xl mt-4 mb-2">Usage:</h2>
-          <ol className="list-decimal list-inside">
-            {nginxInfo.usage.map((step, index) => (
-              <li key={index}>{step}</li>
-            ))}
-          </ol>
-        </div>
-      </div>
+const ComponentInfo = {
+    title: '웹 서버',
+    serviceName: 'Ingress Nginx',
+    version: '',
+    url: 'https://front.kwt.co.kr/',
+    information: 'Next.js를 사용한 프론트엔드 서비스입니다.',
+};
+
+const NginxPage: React.FC = () => {
+    const router = useRouter();
+
+    const { selectedButton, handleMouseOver, handleButtonClick } = useKeyboardNavigation(
+        () => window.open(ComponentInfo.url, '_blank'),
+        () => router.push('/explorer')
     );
-  };
-  
-  export default NginxPage;
-  
+
+    return (
+        <ServiceInfo
+            title={ComponentInfo.title}
+            asciiArt={asciiArt}
+            serviceName={ComponentInfo.serviceName}
+            version={ComponentInfo.version}
+            information={ComponentInfo.information}
+            url={ComponentInfo.url}
+            selectedButton={selectedButton}
+            handleMouseOver={handleMouseOver}
+            handleButtonClick={handleButtonClick}
+        />
+    );
+};
+
+export default NginxPage;
