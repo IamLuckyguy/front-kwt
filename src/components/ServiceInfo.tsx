@@ -27,10 +27,10 @@ const ServiceInfo: React.FC<ServiceInfoProps> = ({
     return (
         <div className="flex flex-col md:flex-row items-start min-h-screen bg-black text-green-500 p-4">
             <div>
-                <div className="w-full md:w-1/2 text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">
+                <div className="w-full md:w-1/2 text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4 font-bold">
                     <TypingText text={title} speed={40} tag={'div'} />
                 </div>
-                <div id={'ascii-art'} className="w-full md:w-1/2 mb-4">
+                <div id={'ascii-art'} className="w-1/2 mb-4">
                     <TypingText text={asciiArt} speed={10} tag={'pre'} />
                 </div>
                 <div className="w-1/2 font-mono text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">

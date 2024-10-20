@@ -65,9 +65,9 @@ const modulePositions = [
   { name: "mysql1", row: 38, startCol: 22, endCol: 36 },
   { name: "mysql2", row: 38, startCol: 42, endCol: 56 },
   { name: "mysql3", row: 38, startCol: 62, endCol: 76 },
-  { name: "Kafka", row: 42, startCol: 2, endCol: 16 },
+  { name: "kafka", row: 42, startCol: 2, endCol: 16 },
   { name: "consumer", row: 42, startCol: 22, endCol: 36 },
-  { name: "elastic-search", row: 42, startCol: 42, endCol: 56 },
+  { name: "elasticsearch", row: 42, startCol: 42, endCol: 56 },
   { name: "kibana", row: 42, startCol: 62, endCol: 76 },
   
 ];
@@ -169,20 +169,6 @@ const Explorer: React.FC = () => {
 
     switch (event.key) {
       case 'ArrowUp':
-        setSelectedModuleIndex((prev) => {
-          const newIndex = prev > 0 ? prev - 1 : modulePositions.length - 1;
-          playBeep();
-          return newIndex;
-        });
-        break;
-      case 'ArrowDown':
-      case 'Tab':
-        setSelectedModuleIndex((prev) => {
-          const newIndex = prev < modulePositions.length - 1 ? prev + 1 : 0;
-          playBeep();
-          return newIndex;
-        });
-        break;
       case 'ArrowLeft':
         setSelectedModuleIndex((prev) => {
           const newIndex = prev > 0 ? prev - 1 : modulePositions.length - 1;
@@ -190,7 +176,9 @@ const Explorer: React.FC = () => {
           return newIndex;
         });
         break;
+      case 'ArrowDown':
       case 'ArrowRight':
+      case 'Tab':
         setSelectedModuleIndex((prev) => {
           const newIndex = prev < modulePositions.length - 1 ? prev + 1 : 0;
           playBeep();
@@ -234,7 +222,7 @@ const Explorer: React.FC = () => {
       tabIndex={0}
       style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     >
-      <div>
+      <div id={'ascii-art'}>
         <h1 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4">둘러보기</h1>
         <div>
           <pre className="explorer-ascii-art">
