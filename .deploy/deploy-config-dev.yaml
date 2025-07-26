@@ -1,0 +1,35 @@
+project: "kwt"
+name: "front"
+
+app:
+  type: "nextjs"
+  module_name: ""
+
+labels:
+  component: "backend"
+  tier: "service"
+
+tld_mappings:
+  co_kr:
+    ingress_namespace: "kwt-co-kr-ingress"
+    wildcard_cert: "kwt-co-kr-wildcard-tls"
+    root_cert: "kwt-co-kr-root-tls"
+
+domains:
+  - "dev.kwt.co.kr"
+  - "www-dev.kwt.co.kr"
+
+replicas: 1
+container_port: 3000
+
+# 개발 환경 리소스 설정 (최대 0.25코어, 512MB 메모리)
+#resources:
+#  limits:
+#    cpu: "250m"
+#    memory: "512Mi"
+#  requests:
+#    cpu: "100m"
+#    memory: "512Mi"
+
+secrets:
+  common: "app-common-credentials"
