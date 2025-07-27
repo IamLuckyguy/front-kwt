@@ -50,7 +50,7 @@ const AsciiAnimation: React.FC = () => {
         router.push('/contact');
         break;
     }
-  }, [options, router]);
+  }, [router]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement> | globalThis.KeyboardEvent) => {
     if (!animationComplete) {

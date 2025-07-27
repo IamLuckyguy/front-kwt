@@ -23,11 +23,11 @@ const ContactForm: React.FC = () => {
   const [fingerprint, setFingerprint] = useState('');
   const [animationStep, setAnimationStep] = useState(0);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push('/');
-  };
+  }, [router]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     // 이미 로딩 중이면 중복 제출 방지
     if (isLoading) return;
     
@@ -74,7 +74,7 @@ const ContactForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [from, subject, content, fingerprint, isLoading]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLElement> | globalThis.KeyboardEvent) => {
     if (event.key === 'Tab' && !isComposing) {
@@ -165,7 +165,6 @@ const ContactForm: React.FC = () => {
       const totalLength = 20;
       const trail = '━'.repeat(Math.min(step, totalLength));
       const remaining = ' '.repeat(Math.max(0, totalLength - step));
-      const emailPos = Math.min(step, totalLength);
       
       if (step > totalLength) {
         return '━━━━━━━━━━━━━━━━━━━━';
