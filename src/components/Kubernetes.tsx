@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { playBeep, playSelectSound } from '@/utils/audio';
 
@@ -80,7 +80,7 @@ const Kubernetes: React.FC = () => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const buttons = ['overview', 'nodes', 'services', 'back'] as const;
+  const buttons = useMemo(() => ['overview', 'nodes', 'services', 'back'] as const, []);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement> | globalThis.KeyboardEvent) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'r') {
