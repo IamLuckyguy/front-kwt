@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { playBeep, playSelectSound } from '@/utils/audio';
 
@@ -350,7 +350,7 @@ const Resume: React.FC = () => {
   const [lastNavigationAction, setLastNavigationAction] = useState<'career' | 'menu'>('career');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const buttons = ['career', 'competencies', 'skills', 'back'] as const;
+  const buttons = useMemo(() => ['career', 'competencies', 'skills', 'back'] as const, []);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement> | globalThis.KeyboardEvent) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'r') {

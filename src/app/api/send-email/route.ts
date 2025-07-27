@@ -102,7 +102,10 @@ export async function POST(request: NextRequest) {
     });
 
     console.log('Email sent successfully:', data);
-    return NextResponse.json({ success: true, emailId: data.id });
+    return NextResponse.json({ 
+      success: true, 
+      emailId: data.data?.id || 'unknown'
+    });
   } catch (error) {
     console.error('Email sending error:', error);
     console.error('Error details:', JSON.stringify(error, null, 2));
