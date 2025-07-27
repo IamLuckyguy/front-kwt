@@ -27,6 +27,10 @@ const useKeyboardNavigation = (onView: () => void, onBack: () => void) => {
                     onBack();
                 }
                 break;
+            case 'Escape':
+                playBeep();
+                onBack();
+                break;
             default:
                 break;
         }
