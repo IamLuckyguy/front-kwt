@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, KeyboardEvent, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { playBeep, playSelectSound } from '@/utils/audio';
 
@@ -15,13 +15,18 @@ const asciiArt = `
 888    Y88b 888P     Y888     888     Y8P  "Y8888P"   "Y88888P"  Y8P 888    Y88b 888   T88b
 `.trim().split('\n');
 
-const options = ['권한받기', '인증하기', '둘러보기', '연락하기'] as const;
+const options = ['프로젝트', '이력서', '연락하기'] as const;
 type Option = typeof options[number];
 const optionDescriptions: Record<Option, string> = {
-  '권한받기': '아키텍쳐의 자세한 기능 조회, 테스트 권한을 신청할 수 있습니다.',
-  '인증하기': '권한을 부여 받은 분은 인증을 해주시면 됩니다.',
-  '둘러보기': '현재 웹사이트의 아키텍쳐를 확인 할 수 있습니다.',
+  '프로젝트': '마이크로서비스 아키텍처, 쿠버네티스 인프라, 시스템 호출 구조를 확인합니다.',
+  '이력서': '개발자의 경력사항과 핵심역량, 보유기술을 확인할 수 있습니다.',
   '연락하기': '궁금한 점이 있다면 문의를 남겨주세요. 메일로 답변 드리겠습니다.',
+};
+
+const mobileDescriptions: Record<Option, string> = {
+  '프로젝트': '시스템 구조 확인',
+  '이력서': '경력 및 기술 스택',
+  '연락하기': '문의 및 연락',
 };
 
 const AsciiAnimation: React.FC = () => {
@@ -35,14 +40,11 @@ const AsciiAnimation: React.FC = () => {
   const handleOptionSelect = useCallback((index: number) => {
     playSelectSound();
     switch (options[index]) {
-      case '권한받기':
-        router.push('/request-permission');
+      case '프로젝트':
+        router.push('/project');
         break;
-      case '인증하기':
-        router.push('/authenticate');
-        break;
-      case '둘러보기':
-        router.push('/explorer');
+      case '이력서':
+        router.push('/resume');
         break;
       case '연락하기':
         router.push('/contact');
@@ -50,7 +52,7 @@ const AsciiAnimation: React.FC = () => {
     }
   }, [options, router]);
 
-  const handleKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement> | globalThis.KeyboardEvent) => {
     if (!animationComplete) {
       setSkipAnimation(true);
       return;
@@ -69,6 +71,9 @@ const AsciiAnimation: React.FC = () => {
       case ' ':
         playSelectSound();
         handleOptionSelect(selectedOption);
+        break;
+      case 'Escape':
+        // ESC 키 처리 - 메인 페이지에서는 동작하지 않음
         break;
     }
   }, [animationComplete, selectedOption, handleOptionSelect]);
@@ -124,19 +129,22 @@ const AsciiAnimation: React.FC = () => {
     return () => timers.forEach(clearTimeout);
   }, [skipAnimation]);
 
+  const handleGlobalKeyDown = useCallback((event: globalThis.KeyboardEvent) => {
+    if (!animationComplete) {
+      setSkipAnimation(true);
+    } else {
+      // 애니메이션 완료 후에는 전역 키보드 이벤트 처리
+      handleKeyDown(event);
+    }
+  }, [animationComplete, handleKeyDown]);
+
+  const handleGlobalClick = useCallback(() => {
+    if (!animationComplete) {
+      setSkipAnimation(true);
+    }
+  }, [animationComplete]);
+
   useEffect(() => {
-    const handleGlobalKeyDown = () => {
-      if (!animationComplete) {
-        setSkipAnimation(true);
-      }
-    };
-
-    const handleGlobalClick = () => {
-      if (!animationComplete) {
-        setSkipAnimation(true);
-      }
-    };
-
     window.addEventListener('click', handleGlobalClick);
     window.addEventListener('keydown', handleGlobalKeyDown);
 
@@ -144,7 +152,7 @@ const AsciiAnimation: React.FC = () => {
       window.removeEventListener('keydown', handleGlobalKeyDown);
       window.removeEventListener('click', handleGlobalClick);
     };
-  }, [animationComplete]);
+  }, [handleGlobalClick, handleGlobalKeyDown]);
 
   useEffect(() => {
     // 컴포넌트가 마운트되면 자동으로 포커스 설정
@@ -155,27 +163,75 @@ const AsciiAnimation: React.FC = () => {
       <div
           id="ascii-animation"
           ref={containerRef}
-          className="font-mono text-[0.3rem] xs:text-[0.4rem] sm:text-xs md:text-sm lg:text-sm whitespace-pre bg-black text-green-500 p-1 xs:p-2 sm:p-4"
+          className="font-mono text-[0.3rem] xs:text-[0.4rem] sm:text-xs md:text-sm lg:text-sm whitespace-pre bg-black text-green-500 p-1 xs:p-2 sm:p-4 min-h-screen flex flex-col justify-center"
           tabIndex={0}
-          onKeyDown={handleKeyDown}
       >
         <div className="overflow-x-auto">
           <pre className="inline-block text-center">{displayLines.join('\n')}</pre>
         </div>
         {animationComplete && (
-            <div className="mt-4 text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl">
-              {options.map((option, index) => (
-                  <div
-                      key={option}
-                      className={`cursor-pointer ${selectedOption === index ? 'bg-green-500 text-black' : ''}`}
-                      onClick={() => handleOptionSelect(index)}
-                      onMouseOver={() => handleMouseOver(index)}
-                  >
-                    {selectedOption === index ? '> ' : '  '}{option}
+            <div className="mt-4 max-w-full">
+              {/* 데스크톱 버전 - 기존 방식 */}
+              <div className="hidden sm:block text-lg md:text-xl lg:text-2xl">
+                {options.map((option, index) => (
+                    <div
+                        key={option}
+                        className={`cursor-pointer ${selectedOption === index ? 'bg-green-500 text-black' : ''}`}
+                        onClick={() => handleOptionSelect(index)}
+                        onMouseOver={() => handleMouseOver(index)}
+                    >
+                      {selectedOption === index ? '> ' : '  '}{option}
+                    </div>
+                ))}
+                <div className="mt-2 text-sm md:text-base lg:text-lg text-green-400">
+                  {optionDescriptions[options[selectedOption]]}
+                </div>
+              </div>
+              
+              {/* 모바일 버전 - 메뉴와 설명 함께 표시 */}
+              <div className="sm:hidden text-sm xs:text-base space-y-2">
+                {options.map((option, index) => (
+                    <div
+                        key={option}
+                        className={`cursor-pointer p-2 border-l-2 ${
+                          selectedOption === index 
+                            ? 'bg-green-500 text-black border-green-300' 
+                            : 'border-green-700'
+                        }`}
+                        onClick={() => handleOptionSelect(index)}
+                        onTouchStart={() => setSelectedOption(index)}
+                    >
+                      <div className="font-bold">
+                        {selectedOption === index ? '> ' : '  '}{option}
+                      </div>
+                      <div className={`text-xs mt-1 ${
+                        selectedOption === index ? 'text-gray-800' : 'text-green-400'
+                      }`}>
+                        {mobileDescriptions[option]}
+                      </div>
+                    </div>
+                ))}
+              </div>
+              {/* PC/태블릿에서만 키보드 컨트롤 UI 표시 */}
+              <div className="hidden sm:block mt-6 text-xs sm:text-xs md:text-sm text-green-300 opacity-70">
+                <div className="inline-block border border-green-300 p-2 sm:p-3">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">◄ ▲ ▼ ►</span>
+                      <span>이동</span>
+                    </div>
+                    <div className="mt-2 flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">[ENTER]</span>
+                        <span>선택</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">[ESC]</span>
+                        <span className="ml-2">뒤로</span>
+                      </div>
+                    </div>
                   </div>
-              ))}
-              <div className="mt-2 text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-green-400">
-                {optionDescriptions[options[selectedOption]]}
+                </div>
               </div>
             </div>
         )}
