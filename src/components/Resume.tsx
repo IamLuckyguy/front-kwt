@@ -522,7 +522,7 @@ const Resume: React.FC = () => {
         router.push('/');
         break;
     }
-  }, [selectedButtonIndex, selectedCompanyId, selectedCareerIndex, currentSection, lastNavigationAction, router]);
+  }, [selectedButtonIndex, selectedCompanyId, selectedCareerIndex, currentSection, lastNavigationAction, router, buttons]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {

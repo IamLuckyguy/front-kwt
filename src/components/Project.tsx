@@ -50,7 +50,7 @@ const Project: React.FC = () => {
         router.push('/');
         break;
     }
-  }, [selectedButtonIndex, router]);
+  }, [selectedButtonIndex, router, buttons]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {

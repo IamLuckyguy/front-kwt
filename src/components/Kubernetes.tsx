@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import useKeyboardNavigation from '@/hooks/useKeyboardNavigation';
 import { playBeep, playSelectSound } from '@/utils/audio';
 
 const kubernetesData = {
@@ -78,7 +77,6 @@ const kubernetesData = {
 const Kubernetes: React.FC = () => {
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState<'overview' | 'nodes' | 'services'>('overview');
-  const [animationComplete, setAnimationComplete] = useState<boolean>(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -119,7 +117,7 @@ const Kubernetes: React.FC = () => {
         router.push('/project');
         break;
     }
-  }, [selectedButtonIndex, router]);
+  }, [selectedButtonIndex, router, buttons]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -132,13 +130,6 @@ const Kubernetes: React.FC = () => {
     };
   }, [handleKeyDown]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimationComplete(true);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -265,7 +256,7 @@ const Kubernetes: React.FC = () => {
 
   const renderServices = () => (
     <div className="space-y-4">
-      {Object.entries(kubernetesData.infrastructure).map(([key, section], index) => (
+      {Object.entries(kubernetesData.infrastructure).map(([, section], index) => (
         <div key={index} className="border border-green-500 p-3">
           <div className="text-green-400 font-bold mb-3">▸ {section.title}</div>
           <div className="space-y-2 pl-4">

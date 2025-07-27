@@ -120,7 +120,7 @@ const CallFlow: React.FC = () => {
     } else if (currentStep >= flowSteps.length - 1) {
       setIsPlaying(false);
     }
-  }, [isPlaying, currentStep, animationFrame]);
+  }, [isPlaying, currentStep, animationFrame, verticalFlowAnimation.length]);
 
   const handlePlay = useCallback(() => {
     if (currentStep === flowSteps.length - 1) {
