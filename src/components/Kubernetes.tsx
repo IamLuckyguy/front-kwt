@@ -89,16 +89,22 @@ const Kubernetes: React.FC = () => {
 
     switch (event.key) {
       case 'ArrowLeft':
-      case 'ArrowUp':
         event.preventDefault();
         playBeep();
         setSelectedButtonIndex((prev) => (prev > 0 ? prev - 1 : buttons.length - 1));
         break;
       case 'ArrowRight':
-      case 'ArrowDown':
         event.preventDefault();
         playBeep();
         setSelectedButtonIndex((prev) => (prev < buttons.length - 1 ? prev + 1 : 0));
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        window.scrollBy(0, -100);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        window.scrollBy(0, 100);
         break;
       case 'Enter':
       case ' ':
@@ -106,7 +112,7 @@ const Kubernetes: React.FC = () => {
         playSelectSound();
         const selectedButton = buttons[selectedButtonIndex];
         if (selectedButton === 'back') {
-          router.push('/');
+          router.push('/project');
         } else {
           setCurrentSection(selectedButton as 'overview' | 'nodes' | 'services');
         }
@@ -370,9 +376,15 @@ const Kubernetes: React.FC = () => {
         <div className="hidden sm:block mt-6 text-center text-xs text-green-300 opacity-70">
           <div className="inline-block border border-green-300 p-2">
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-base">◄ ► ▲ ▼</span>
-                <span>이동</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">◄ ►</span>
+                  <span>메뉴 선택</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base">▲ ▼</span>
+                  <span>스크롤</span>
+                </div>
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
