@@ -126,7 +126,7 @@ const kubernetesTree: TreeNode = {
           name: 'corpbreak-dev/prod',
           type: 'namespace',
           children: [
-            { id: 'corpbreak-note', name: '(Corpbreak Services)', type: 'service', details: '코프브레이크 서비스' }
+            { id: 'corpbreak-note', name: '(Corpbreak Services)', type: 'service', details: 'Corpbreak 프로젝트' }
           ]
         },
         {
@@ -134,7 +134,7 @@ const kubernetesTree: TreeNode = {
           name: 'yumyum-dev/prod',
           type: 'namespace',
           children: [
-            { id: 'yumyum-note', name: '(Yumyum Services)', type: 'service', details: '얌얌 서비스' }
+            { id: 'yumyum-note', name: '(Yumyum Services)', type: 'service', details: '냠냠 픽업 프로젝트' }
           ]
         }
       ]
