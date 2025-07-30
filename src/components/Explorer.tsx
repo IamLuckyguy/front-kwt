@@ -70,7 +70,7 @@ const kubernetesTree: TreeNode = {
               name: 'Frontend',
               type: 'folder',
               children: [
-                { id: 'front-green', name: 'front', type: 'deployment', status: 'Running', replicas: '1/1', details: 'Next.js 프론트엔드' },
+                { id: 'front-green-dev', name: 'front', type: 'deployment', status: 'Running', replicas: '1/1', details: 'Next.js 프론트엔드' },
               ]
             },
             {
@@ -90,9 +90,9 @@ const kubernetesTree: TreeNode = {
               name: 'Applications',
               type: 'folder',
               children: [
-                { id: 'exchange', name: 'exchange', type: 'deployment', status: 'Running', replicas: '1/1', details: '환율 계산기' },
-                { id: 'givemesalary', name: 'givemesalary', type: 'deployment', status: 'Running', replicas: '1/1', details: '연봉 계산기' },
-                { id: 'dev-portal', name: 'dev-portal', type: 'deployment', status: 'Running', replicas: '1/1', details: '개발 도구 포털' },
+                { id: 'exchange-dev', name: 'exchange', type: 'deployment', status: 'Running', replicas: '1/1', details: '환율 계산기' },
+                { id: 'givemesalary-dev', name: 'givemesalary', type: 'deployment', status: 'Running', replicas: '1/1', details: '연봉 계산기' },
+                { id: 'dev-portal-dev', name: 'dev-portal', type: 'deployment', status: 'Running', replicas: '1/1', details: '개발 도구 포털' },
               ]
             },
           ]
@@ -107,7 +107,7 @@ const kubernetesTree: TreeNode = {
               name: 'Frontend',
               type: 'folder',
               children: [
-                { id: 'front-green', name: 'front', type: 'deployment', status: 'Running', replicas: '2/2', details: 'Next.js 프론트엔드' },
+                { id: 'front-green-prod', name: 'front', type: 'deployment', status: 'Running', replicas: '2/2', details: 'Next.js 프론트엔드' },
               ]
             },
             {
@@ -115,8 +115,8 @@ const kubernetesTree: TreeNode = {
               name: 'Applications',
               type: 'folder',
               children: [
-                { id: 'exchange', name: 'exchange', type: 'deployment', status: 'Running', replicas: '2/2', details: '환율 계산기' },
-                { id: 'givemesalary', name: 'givemesalary', type: 'deployment', status: 'Running', replicas: '2/2', details: '연봉 계산기' },
+                { id: 'exchange-prod', name: 'exchange', type: 'deployment', status: 'Running', replicas: '2/2', details: '환율 계산기' },
+                { id: 'givemesalary-prod', name: 'givemesalary', type: 'deployment', status: 'Running', replicas: '2/2', details: '연봉 계산기' },
               ]
             }
           ]

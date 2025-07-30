@@ -149,7 +149,6 @@ const CallFlow: React.FC = () => {
 
     switch (event.key) {
       case 'ArrowLeft':
-      case 'ArrowUp':
         event.preventDefault();
         playBeep();
         setSelectedControl((prev) => {
@@ -159,7 +158,6 @@ const CallFlow: React.FC = () => {
         });
         break;
       case 'ArrowRight':
-      case 'ArrowDown':
         event.preventDefault();
         playBeep();
         setSelectedControl((prev) => {
@@ -167,6 +165,14 @@ const CallFlow: React.FC = () => {
           if (prev === 'reset') return 'back';
           return 'play';
         });
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        window.scrollBy(0, -100);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        window.scrollBy(0, 100);
         break;
       case 'Enter':
       case ' ':
@@ -303,9 +309,15 @@ const CallFlow: React.FC = () => {
         <div className="hidden sm:block mt-6 text-center text-xs text-green-300 opacity-70">
           <div className="inline-block border border-green-300 p-2">
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-base">◄ ► ▲ ▼</span>
-                <span>이동</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">◄ ►</span>
+                  <span>버튼 선택</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base">▲ ▼</span>
+                  <span>스크롤</span>
+                </div>
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
@@ -314,7 +326,7 @@ const CallFlow: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-mono">[ESC]</span>
-                  <span className="ml-2">뒤로</span>
+                  <span>뒤로</span>
                 </div>
               </div>
             </div>
