@@ -29,7 +29,7 @@ const resumeData = {
   career: [
     {
       id: "sk-rental",
-      period: "2025.02 ~ 재직 중 (5개월)",
+      period: "2025.02 ~ 재직 중 (6개월)",
       company: "SK렌터카㈜",
       department: "서비스개발팀",
       position: "매니저",
@@ -70,24 +70,55 @@ const resumeData = {
   ],
   projects: {
     "sk-rental": [
-      {
-        title: "SK렌터카 웹사이트 개편",
-        description: "웹사이트 전면 개편",
-        period: "2025.02 ~ 2025.07 (오픈 예정)",
-        tech: "Kubernetes (AKS), Next.js, Java(SpringBoot), Oracle, Redis",
-        team: "서비스개발팀",
-        role: "백엔드 PL",
-        teamSize: "내부: 프론트 1인, 백엔드 2인 / 외주: 프론트 35인, 백엔드 7인",
-        tasks: [
-          "외주 인력 대상 입사 지원, 개발 환경 구축 및 개선점 리뷰, 트러블 슈팅",
-          "서비스 문제점 파악 및 개선점 도출, 내재화 계획 수립",
-          "다중 도메인간 SSO 연동 문제 해결을 위한 프론트, 백엔드 분석 및 문서화",
-          "라이브 서비스와 격리된 환경 구성을 위한 쿠버네티스 신규 클러스터, 배포 파이프라인 구축 지원",
-          "신규 서버와 기존 서비스의 L4, L7 구간 통신 확인, 방화벽 정책 추가 지원",
-          "신규 서브 도메인과 Azure APP Gateway(L7 라우터), APP Gateway와 서비스 라우팅 설정",
-          "신규 도메인 추가로 인한 CORS 발생 구간 점검, 대응 수정"
-        ]
-      }
+        {
+            title: "백엔드 서비스 QA환경 신규 구축 및 형상관리 도구 SVN -> Git 전환",
+            description: "QA환경 신규 구축 및 형상관리 도구, 내부 저장소 전환",
+            period: "2025.08 ~ 2025.09",
+            tech: "SVN, Git, Jenkins, Azure DevOps, Java(SpringBoot)",
+            team: "서비스개발팀",
+            role: "PM",
+            teamSize: "내부: 백엔드 1인 / 외주: DevOps 2인",
+            tasks: [
+                "PROD, DEV 환경만 구성된 서비스의 QA환경 신규 구축(서버, 배포 구성 포함)",
+                "SVN을 이용한 형상관리 도구를 Git으로 전환",
+                "PROD, DEV 환경 별로 별도의 저장소로 관리되던 코드를 단일 저장소로 통합",
+                "Nexus 내부 저장소에 위치한 라이브러리를 Azure DevOps Artifacts로 이전",
+                "Jenkins 파이프라인 스크립트 수정, 신규 작성",
+            ]
+        },
+        {
+            title: "AI를 활용한 코드 리뷰 서비스 연구 개발",
+            description: "LLM 기반 코드 리뷰 서비스 PoC 개발",
+            period: "2025.06 ~ 2025.08",
+            tech: "Java(SpringBoot), Github, Google Gemini",
+            team: "서비스개발팀",
+            role: "개발",
+            teamSize: "내부: 백엔드 1인",
+            tasks: [
+                "GitHub에 Push된 코드를 LLM을 통해 분석, 코드 리뷰 결과를 PR에 댓글로 남기는 서비스 PoC 개발",
+                "Google Gemini API를 활용한 코드 분석 및 리뷰 작성",
+                "LLM 모델 변경에 따른 유연한 대응을 위한 인터페이스 설계 및 구현",
+                "시연 자료 작성, 사내 발표 및 적용 계획 수립"
+            ]
+        },
+        {
+            title: "SK렌터카 웹사이트 개편",
+            description: "웹사이트 전면 개편",
+            period: "2025.02 ~ 2025.07",
+            tech: "Kubernetes (AKS), Next.js, Java(SpringBoot), Oracle, Redis",
+            team: "서비스개발팀",
+            role: "백엔드 PL",
+            teamSize: "내부: 프론트 1인, 백엔드 2인 / 외주: 프론트 35인, 백엔드 7인",
+            tasks: [
+              "외주 인력 대상 입사 지원, 개발 환경 구축 및 개선점 리뷰, 트러블 슈팅",
+              "서비스 문제점 파악 및 개선점 도출, 내재화 계획 수립",
+              "다중 도메인간 SSO 연동 문제 해결을 위한 프론트, 백엔드 분석 및 문서화",
+              "라이브 서비스와 격리된 환경 구성을 위한 쿠버네티스 신규 클러스터, 배포 파이프라인 구축 지원",
+              "신규 서버와 기존 서비스의 L4, L7 구간 통신 확인, 방화벽 정책 추가 지원",
+              "신규 서브 도메인과 Azure APP Gateway(L7 라우터), APP Gateway와 서비스 라우팅 설정",
+              "신규 도메인 추가로 인한 CORS 발생 구간 점검, 대응 수정"
+            ]
+        }
     ],
     "wemakeprice": [
       {
